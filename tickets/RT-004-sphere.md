@@ -26,3 +26,7 @@ Implement a sphere defined by center and radius. Ray–sphere intersection retur
 ## Notes
 
 Standard quadratic formula; watch for rays inside the sphere.
+
+## Branch
+
+`ticket/RT-004-sphere`
