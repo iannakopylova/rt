@@ -26,3 +26,7 @@ Second audit scene: flat plane and cube with **lower brightness** than Scene 1.
 ## Notes
 
 Document brightness values used in each scene for the auditor doc.
+
+## Branch
+
+`ticket/RT-012-scene-plane-cube`
