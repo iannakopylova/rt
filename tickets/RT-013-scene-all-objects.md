@@ -25,3 +25,7 @@ Third audit scene: one cube, one sphere, one cylinder, and one flat plane in the
 ## Notes
 
 Reuse scene definition for RT-014; only camera should change.
+
+## Branch
+
+`ticket/RT-013-scene-all-objects`
