@@ -26,3 +26,7 @@ Implement a pinhole camera that generates a ray for each pixel `(x, y)` given im
 ## Notes
 
 Use a right-handed coordinate system and document which axis is “up”.
+
+## Branch
+
+`ticket/RT-003-camera`
