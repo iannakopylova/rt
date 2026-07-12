@@ -25,3 +25,7 @@ Fourth audit scene: **identical objects** as Scene 3, but camera moved to a diff
 ## Notes
 
 Ideal: one scene function + two camera presets to avoid duplication.
+
+## Branch
+
+`ticket/RT-014-scene-alt-camera`
