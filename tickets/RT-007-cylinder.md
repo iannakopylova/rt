@@ -26,3 +26,7 @@ Implement a finite or infinite cylinder (document which). Typical choice: vertic
 ## Notes
 
 Look up cylinder ray intersection; cap disks are often a separate check.
+
+## Branch
+
+`ticket/RT-007-cylinder`
