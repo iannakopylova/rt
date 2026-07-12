@@ -6,52 +6,40 @@ _Last updated: 2026-07-12_
 
 | Person | Active branch | Next up |
 |--------|---------------|---------|
-| **Iana** | `ticket/RT-009-ray-tracer-core` | RT-010 |
-| **Sofia** | `ticket/RT-003-camera` or `ticket/RT-004-sphere` | RT-005–007 |
-| **Andriana** | `ticket/RT-015-documentation` (outline) | RT-008 |
+| **Iana** | [`ticket/RT-009-ray-tracer-core`](https://github.com/iannakopylova/rt/pull/9) | [RT-010](https://github.com/iannakopylova/rt/pull/10) |
+| **Sofia** | [`ticket/RT-003-camera`](https://github.com/iannakopylova/rt/pull/3) or [`ticket/RT-004-sphere`](https://github.com/iannakopylova/rt/pull/4) | RT-005–007 |
+| **Andriana** | [`ticket/RT-015-documentation`](https://github.com/iannakopylova/rt/pull/15) (outline) | [RT-008](https://github.com/iannakopylova/rt/pull/8) |
 
 ---
 
-## Backlog
+## Review RT-001 & RT-002 (already on `main`)
 
-| ID | Title | Branch | Assignee |
-|----|-------|--------|----------|
-| [RT-016](./RT-016-bonus-reflection.md) | Reflection (bonus) | `ticket/RT-016-bonus-reflection` | @andriana |
-| [RT-017](./RT-017-bonus-refraction.md) | Refraction (bonus) | `ticket/RT-017-bonus-refraction` | @sofia |
-| [RT-018](./RT-018-bonus-textures.md) | Textures (bonus) | `ticket/RT-018-bonus-textures` | @iana |
+| Ticket | Review link |
+|--------|-------------|
+| RT-001 Project setup | https://github.com/iannakopylova/rt/issues/1 |
+| RT-002 Math primitives | https://github.com/iannakopylova/rt/issues/2 |
 
-## To Do
+## Draft PRs (one per ticket)
 
-| ID | Title | Branch | Assignee |
-|----|-------|--------|----------|
-| [RT-003](./RT-003-camera.md) | Camera | `ticket/RT-003-camera` | @sofia |
-| [RT-004](./RT-004-sphere.md) | Sphere | `ticket/RT-004-sphere` | @sofia |
-| [RT-005](./RT-005-plane.md) | Plane | `ticket/RT-005-plane` | @sofia |
-| [RT-006](./RT-006-cube.md) | Cube | `ticket/RT-006-cube` | @sofia |
-| [RT-007](./RT-007-cylinder.md) | Cylinder | `ticket/RT-007-cylinder` | @sofia |
-| [RT-008](./RT-008-lighting-shadows.md) | Lights & shadows | `ticket/RT-008-lighting-shadows` | @andriana |
-| [RT-010](./RT-010-ppm-output.md) | PPM output | `ticket/RT-010-ppm-output` | @iana |
-| [RT-011](./RT-011-scene-sphere.md) | Scene 1 | `ticket/RT-011-scene-sphere` | @andriana |
-| [RT-012](./RT-012-scene-plane-cube.md) | Scene 2 | `ticket/RT-012-scene-plane-cube` | @andriana |
-| [RT-013](./RT-013-scene-all-objects.md) | Scene 3 | `ticket/RT-013-scene-all-objects` | @andriana |
-| [RT-014](./RT-014-scene-alt-camera.md) | Scene 4 | `ticket/RT-014-scene-alt-camera` | @andriana |
-| [RT-015](./RT-015-documentation.md) | Documentation | `ticket/RT-015-documentation` | @andriana |
+| ID | PR | Assignee |
+|----|-----|----------|
+| RT-003 | https://github.com/iannakopylova/rt/pull/3 | @sofia |
+| RT-004 | https://github.com/iannakopylova/rt/pull/4 | @sofia |
+| RT-005 | https://github.com/iannakopylova/rt/pull/5 | @sofia |
+| RT-006 | https://github.com/iannakopylova/rt/pull/6 | @sofia |
+| RT-007 | https://github.com/iannakopylova/rt/pull/7 | @sofia |
+| RT-008 | https://github.com/iannakopylova/rt/pull/8 | @andriana |
+| RT-009 | https://github.com/iannakopylova/rt/pull/9 | @iana |
+| RT-010 | https://github.com/iannakopylova/rt/pull/10 | @iana |
+| RT-011 | https://github.com/iannakopylova/rt/pull/11 | @andriana |
+| RT-012 | https://github.com/iannakopylova/rt/pull/12 | @andriana |
+| RT-013 | https://github.com/iannakopylova/rt/pull/13 | @andriana |
+| RT-014 | https://github.com/iannakopylova/rt/pull/14 | @andriana |
+| RT-015 | https://github.com/iannakopylova/rt/pull/15 | @andriana |
+| RT-016 | https://github.com/iannakopylova/rt/pull/16 | @andriana |
+| RT-017 | https://github.com/iannakopylova/rt/pull/17 | @sofia |
+| RT-018 | https://github.com/iannakopylova/rt/pull/18 | @iana |
 
-## In Progress
+## Backlog / To Do / In Progress
 
-| ID | Title | Branch | Assignee |
-|----|-------|--------|----------|
-| [RT-009](./RT-009-ray-tracer-core.md) | Ray tracer core | `ticket/RT-009-ray-tracer-core` | @iana |
-
-## In Review
-
-| ID | Title | Branch / link | Assignee |
-|----|-------|---------------|----------|
-| [RT-001](./RT-001-project-setup.md) | Project setup (on `main`) | review issue | @iana |
-| [RT-002](./RT-002-math-primitives.md) | Math primitives (on `main`) | review issue | @iana |
-
-## Done
-
-| ID | Title | Notes | Assignee |
-|----|-------|-------|----------|
-| _empty until RT-001/002 reviews merge/close_ | | | |
+Same ownership as before — work on the ticket branch, push commits to the existing draft PR, then mark **Ready for review**.
