@@ -26,3 +26,7 @@ Build and export the first mandatory audit image: a scene containing only a sphe
 ## Notes
 
 Use smaller resolution while iterating; regenerate at 800×600 for submission.
+
+## Branch
+
+`ticket/RT-011-scene-sphere`
