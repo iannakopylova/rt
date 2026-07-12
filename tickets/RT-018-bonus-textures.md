@@ -26,3 +26,7 @@ Map 2D textures onto object surfaces (e.g. UV on sphere or cube faces).
 ## Notes
 
 Project spec suggests `-t` flag; keep off by default for speed.
+
+## Branch
+
+`ticket/RT-018-bonus-textures`
