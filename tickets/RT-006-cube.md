@@ -26,3 +26,7 @@ Implement an axis-aligned cube (AABB) with configurable min/max corners or cente
 ## Notes
 
 Axis-aligned is enough for mandatory requirements; rotated cube is optional.
+
+## Branch
+
+`ticket/RT-006-cube`
