@@ -6,9 +6,10 @@ Lightweight issue tracker for the **rt** ray tracer project (3-person team).
 
 1. Open **[BOARD.md](./BOARD.md)** for the current sprint view.
 2. Check **[DEPENDENCIES.md](./DEPENDENCIES.md)** to see what must be done before your ticket.
-3. Pick a ticket from **To Do** and assign yourself in the ticket file.
-4. Move it to **In Progress** on the board.
-5. When done, open a PR (or merge) and move the ticket to **Done**.
+3. Work on the ticket branch: `ticket/RT-XXX-short-title` (see [../docs/BRANCHING.md](../docs/BRANCHING.md)).
+4. Move it to **In Progress** on the board while coding.
+5. When done, mark the PR ready for review and move the ticket to **In Review**.
+6. After merge, move the ticket to **Done**.
 
 ## Ticket IDs
 
