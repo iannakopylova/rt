@@ -26,3 +26,7 @@ Add reflective materials: recursive reflection rays with a max depth limit.
 ## Notes
 
 Example reference image in project brief shows reflection.
+
+## Branch
+
+`ticket/RT-016-bonus-reflection`
