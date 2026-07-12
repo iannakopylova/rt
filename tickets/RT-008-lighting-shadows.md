@@ -26,3 +26,7 @@ Add at least one point or directional light with adjustable brightness. Implemen
 ## Notes
 
 Ambient term (small constant) helps avoid pure-black shadows.
+
+## Branch
+
+`ticket/RT-008-lighting-shadows`
