@@ -26,3 +26,7 @@ Write rendered image to stdout in P3 PPM format. Support easy resolution changes
 ## Notes
 
 Suggested flags: `--width`, `--height`, `--output` (optional file instead of stdout).
+
+## Branch
+
+`ticket/RT-010-ppm-output`
