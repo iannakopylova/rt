@@ -26,3 +26,7 @@ Implement the main tracing pipeline: for each pixel, cast camera ray, find close
 ## Notes
 
 This is the integration point — coordinate with object owners on the trait API early.
+
+## Branch
+
+`ticket/RT-009-ray-tracer-core`
