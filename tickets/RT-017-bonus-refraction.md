@@ -26,3 +26,7 @@ Add transparent/refractive materials (glass) using Snell's law.
 ## Notes
 
 Harder than reflection; pair with RT-016 if one person owns “advanced materials”.
+
+## Branch
+
+`ticket/RT-017-bonus-refraction`
