@@ -10,12 +10,12 @@ mod vec3;
 
 use camera::Camera;
 use material::Material;
-use objects::{Cube, Hittable, Plane, Sphere};
+use objects::{Cube, Cylinder, Hittable, Plane, Sphere};
 use ray::Ray;
 use vec3::{Color, Vec3};
 
 fn main() {
-    println!("rt ray tracer — foundation ready (RT-001 .. RT-006)");
+    println!("rt ray tracer — foundation ready (RT-001 .. RT-007)");
 
     // Quick sanity check of math + camera + primitives (not PPM output yet).
     let v = Vec3::new(1.0, 2.0, 3.0).normalize();
@@ -56,5 +56,19 @@ fn main() {
     );
 
     let cube = Cube::with_albedo(Vec3::new(1.5, 0.0, -4.0), 1.0, Color::new(0.2, 0.5, 1.0));
-    let _ = (cube.center(), cube.hit(&Ray::new(Vec3::ZERO, Vec3::new(0.3, 0.0, -1.0)), 0.001, f64::INFINITY));
+    let _ = (
+        cube.center(),
+        cube.hit(
+            &Ray::new(Vec3::ZERO, Vec3::new(0.3, 0.0, -1.0)),
+            0.001,
+            f64::INFINITY,
+        ),
+    );
+
+    let cyl = Cylinder::with_albedo(Vec3::new(-1.5, 0.0, -4.0), 0.5, 2.0, Color::new(0.2, 0.8, 0.3));
+    let _ = cyl.hit(
+        &Ray::new(Vec3::ZERO, Vec3::new(-0.3, 0.0, -1.0)),
+        0.001,
+        f64::INFINITY,
+    );
 }
