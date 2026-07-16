@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | To Do |
+| **Status** | Done |
 | **Assignee** | @sofia |
 | **Priority** | P1 |
 | **Epic** | objects |
@@ -13,10 +13,10 @@ Implement an axis-aligned cube (AABB) with configurable min/max corners or cente
 
 ## Acceptance criteria
 
-- [ ] Cube position/size configurable before render
-- [ ] Ray–AABB intersection (slab method)
-- [ ] Correct face normals at hit point
-- [ ] Implements shared `Hittable` trait
+- [x] Cube position/size configurable before render
+- [x] Ray–AABB intersection (slab method)
+- [x] Correct face normals at hit point
+- [x] Implements shared `Hittable` trait
 
 ## Dependencies
 
@@ -26,3 +26,8 @@ Implement an axis-aligned cube (AABB) with configurable min/max corners or cente
 ## Notes
 
 Axis-aligned is enough for mandatory requirements; rotated cube is optional.
+
+Implemented in `src/objects/cube.rs`:
+- Stored as `min`/`max` corners
+- `from_corners` + `from_center_extent` (full edge length)
+- Slab intersection with face normals from the hit slab

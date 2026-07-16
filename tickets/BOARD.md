@@ -8,7 +8,7 @@ _Last updated: 2026-07-17_
 | Person | Active ticket | Next up |
 |--------|---------------|---------|
 | **Iana** | RT-009 | RT-010 |
-| **Sofia** | RT-006 | RT-007 |
+| **Sofia** | RT-007 | — |
 | **Andriana** | RT-015 outline | RT-008 (after RT-009) |
 
 ---
@@ -25,7 +25,6 @@ _Last updated: 2026-07-17_
 
 | ID | Title | Priority | Epic | Assignee |
 |----|-------|----------|------|----------|
-| [RT-006](./RT-006-cube.md) | Cube primitive | P1 | objects | @sofia |
 | [RT-007](./RT-007-cylinder.md) | Cylinder primitive | P1 | objects | @sofia |
 | [RT-008](./RT-008-lighting-shadows.md) | Lights, brightness & shadows | P1 | rendering | @andriana |
 | [RT-010](./RT-010-ppm-output.md) | PPM (P3) output & resolution flag | P1 | rendering | @iana |
@@ -56,3 +55,4 @@ _Last updated: 2026-07-17_
 | [RT-003](./RT-003-camera.md) | Camera (position, angle, FOV) | P0 | foundation | @sofia |
 | [RT-004](./RT-004-sphere.md) | Sphere primitive | P1 | objects | @sofia |
 | [RT-005](./RT-005-plane.md) | Flat plane primitive | P1 | objects | @sofia |
+| [RT-006](./RT-006-cube.md) | Cube primitive | P1 | objects | @sofia |
