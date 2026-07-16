@@ -9,14 +9,15 @@ mod tracer;
 mod vec3;
 
 use camera::Camera;
-use objects::{Hittable, Sphere};
+use material::Material;
+use objects::{Hittable, Plane, Sphere};
 use ray::Ray;
 use vec3::{Color, Vec3};
 
 fn main() {
-    println!("rt ray tracer — foundation ready (RT-001 .. RT-004)");
+    println!("rt ray tracer — foundation ready (RT-001 .. RT-005)");
 
-    // Quick sanity check of math + camera + sphere (not PPM output yet).
+    // Quick sanity check of math + camera + primitives (not PPM output yet).
     let v = Vec3::new(1.0, 2.0, 3.0).normalize();
     let ray = Ray::new(Vec3::ZERO, v);
     let _ = ray.at(1.0);
@@ -41,4 +42,16 @@ fn main() {
     ) {
         let _ = (hit.t, hit.point, hit.normal, hit.front_face, hit.material);
     }
+
+    let ground = Plane::ground(-1.0, Material::solid(Color::new(0.4, 0.4, 0.4)));
+    let _wall = Plane::with_albedo(
+        Vec3::new(0.0, 0.0, -10.0),
+        Vec3::new(0.0, 0.0, 1.0),
+        Color::new(0.8, 0.8, 0.9),
+    );
+    let _ = ground.hit(
+        &Ray::new(Vec3::new(0.0, 1.0, 0.0), Vec3::new(0.0, -1.0, 0.0)),
+        0.001,
+        f64::INFINITY,
+    );
 }

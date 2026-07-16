@@ -12,6 +12,7 @@ pub mod cylinder;
 pub mod plane;
 pub mod sphere;
 
+pub use plane::Plane;
 pub use sphere::Sphere;
 
 /// Record of the nearest surface intersection along a ray.
