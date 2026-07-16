@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | To Do |
+| **Status** | Done |
 | **Assignee** | @sofia |
 | **Priority** | P1 |
 | **Epic** | objects |
@@ -13,10 +13,10 @@ Implement an infinite flat plane (e.g. `y = 0` ground) with configurable point o
 
 ## Acceptance criteria
 
-- [ ] Plane position/orientation configurable
-- [ ] Ray–plane intersection with correct normal
-- [ ] Implements shared `Hittable` trait
-- [ ] Works as ground in Scene 2 and 3
+- [x] Plane position/orientation configurable
+- [x] Ray–plane intersection with correct normal
+- [x] Implements shared `Hittable` trait
+- [x] Works as ground in Scene 2 and 3
 
 ## Dependencies
 
@@ -26,3 +26,8 @@ Implement an infinite flat plane (e.g. `y = 0` ground) with configurable point o
 ## Notes
 
 Use for floor/ground; document how to offset height.
+
+Implemented in `src/objects/plane.rs`:
+- Hessian form `normal · x + offset == 0`
+- `Plane::from_point_normal` / `Plane::ground(y, …)` for Scene 2–3 floors
+- `Hittable::hit` with face-oriented normals via `HitRecord`
