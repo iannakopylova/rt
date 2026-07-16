@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | To Do |
+| **Status** | Done |
 | **Assignee** | @sofia |
 | **Priority** | P1 |
 | **Epic** | objects |
@@ -13,10 +13,10 @@ Implement a sphere defined by center and radius. Ray–sphere intersection retur
 
 ## Acceptance criteria
 
-- [ ] Sphere position configurable (e.g. center at `(1, 1, 1)`)
-- [ ] Correct ray–sphere intersection (nearest positive `t`)
-- [ ] Implements shared `Object` / `Hittable` trait used by tracer
-- [ ] Renders as a visible circle/disc in a minimal test scene
+- [x] Sphere position configurable (e.g. center at `(1, 1, 1)`)
+- [x] Correct ray–sphere intersection (nearest positive `t`)
+- [x] Implements shared `Object` / `Hittable` trait used by tracer
+- [x] Renders as a visible circle/disc in a minimal test scene
 
 ## Dependencies
 
@@ -26,3 +26,8 @@ Implement a sphere defined by center and radius. Ray–sphere intersection retur
 ## Notes
 
 Standard quadratic formula; watch for rays inside the sphere.
+
+Implemented in `src/objects/sphere.rs` + shared API in `src/objects/mod.rs`:
+- `Hittable::hit(ray, t_min, t_max) -> Option<HitRecord>` (RT-009 contract stub)
+- half-b quadratic; face-oriented normals; `Material` albedo
+- camera-grid disc test in unit tests

@@ -6,7 +6,7 @@
 
 # rt Ticket Tracker
 
-Last refreshed: 2026-07-16 (RT-003 done)
+Last refreshed: 2026-07-17 (RT-004 done)
 
 > **Board vs tracker**: [BOARD.md](./BOARD.md) is the live sprint board (who is on what). This file is the full requirements-style tracker: every ticket, deps, acceptance summary, and coverage by epic.
 
@@ -41,7 +41,7 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 | Person | Active ticket | Next up |
 |--------|---------------|---------|
 | **Iana** | RT-009 | RT-010 |
-| **Sofia** | — | RT-004 → RT-005–007 |
+| **Sofia** | — | RT-005 → RT-006–007 |
 | **Andriana** | RT-015 outline (draft OK) | RT-008 (after RT-009 + objects) |
 
 ---
@@ -113,7 +113,7 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 | ID | Status | Ticket | Size | Deps | Coverage | Assignee |
 |----|--------|--------|------|------|----------|----------|
 | RT-003 | ✅ | **Camera**: position, look-at, up, FOV; `get_ray(u, v) -> Ray`; document Scene 4 camera change. | M | RT-002 | D3 | @sofia |
-| RT-004 | 🟡 | **Sphere**: center + radius; ray–sphere hit; `Hittable` trait; visible in minimal scene. | M | RT-002 | D4 | @sofia |
+| RT-004 | ✅ | **Sphere**: center + radius; ray–sphere hit; `Hittable` trait; visible in minimal scene. | M | RT-002 | D4 | @sofia |
 | RT-005 | 🟡 | **Plane**: point + normal; ray–plane hit; ground for Scenes 2–3. | M | RT-002 | D4 | @sofia |
 | RT-006 | 🟡 | **Cube**: AABB (min/max or center+size); slab intersection; face normals. | M | RT-002 | D4 | @sofia |
 | RT-007 | 🟡 | **Cylinder**: position, radius, height; side (+ caps if finite); normals. | M | RT-002 | D4 | @sofia |
@@ -195,7 +195,7 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 | D1 | Project builds & runs | RT-001 | ✅ |
 | D2 | Math primitives | RT-002 | ✅ |
 | D3 | Camera | RT-003 | ✅ |
-| D4 | Four primitives | RT-004, RT-005, RT-006, RT-007 | 🟡 |
+| D4 | Four primitives | RT-004 ✅, RT-005, RT-006, RT-007 | 🟡 |
 | D5 | Tracer core / closest hit | RT-009 | 🟢 |
 | D6 | Lights & shadows | RT-008 | 🟡 |
 | D7 | PPM output | RT-010 | 🟡 |
@@ -212,8 +212,8 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 ## 6) Immediate Next Work Queue
 
-1. **Iana** — finish **RT-009** (define `Hittable` / `HitRecord` early so Sofia can plug objects in).
-2. **Sofia** — **RT-004** sphere, then **RT-005–007**.
+1. **Iana** — finish **RT-009** (trait already stubbed in `objects/mod.rs` as `Hittable`).
+2. **Sofia** — **RT-005** plane, then **RT-006–007**.
 3. **Andriana** — keep **RT-015** outline warm; start **RT-008** once RT-009 + objects land.
 4. After RT-009: **Iana → RT-010** in parallel with **Andriana → RT-008**.
 5. Then scenes **RT-011 → RT-014**, finalize **RT-015**.
@@ -234,7 +234,7 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 | Phase | Tickets |
 |-------|---------|
-| 2 | RT-003 ✅, RT-004 🟡, RT-005 🟡, RT-006 🟡, RT-007 🟡 |
+| 2 | RT-003 ✅, RT-004 ✅, RT-005 🟡, RT-006 🟡, RT-007 🟡 |
 | 7 | RT-017 ⬜ |
 
 ### Andriana — 7 tickets
@@ -250,9 +250,9 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 | Status | Count |
 |--------|-------|
-| ✅ Done | 3 |
+| ✅ Done | 4 |
 | 🟢 In Progress | 1 |
-| 🟡 To Do | 11 |
+| 🟡 To Do | 10 |
 | ⬜ Backlog | 3 |
 | 🔵 In Review | 0 |
 
