@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | To Do |
+| **Status** | Done |
 | **Assignee** | @sofia |
 | **Priority** | P0 |
 | **Epic** | foundation |
@@ -13,10 +13,10 @@ Implement a pinhole camera that generates a ray for each pixel `(x, y)` given im
 
 ## Acceptance criteria
 
-- [ ] Camera configurable: position, look-at (or direction), up vector, FOV
-- [ ] `get_ray(u, v) -> Ray` for normalized coords or pixel indices
-- [ ] Changing camera position produces visibly different rays (test or debug print)
-- [ ] Documented example: move camera for Scene 4
+- [x] Camera configurable: position, look-at (or direction), up vector, FOV
+- [x] `get_ray(u, v) -> Ray` for normalized coords or pixel indices
+- [x] Changing camera position produces visibly different rays (test or debug print)
+- [x] Documented example: move camera for Scene 4
 
 ## Dependencies
 
@@ -26,3 +26,9 @@ Implement a pinhole camera that generates a ray for each pixel `(x, y)` given im
 ## Notes
 
 Use a right-handed coordinate system and document which axis is “up”.
+
+Implemented in `src/camera.rs`:
+- `Camera::look_at(eye, look_at, world_up, vfov_degrees, aspect_ratio)`
+- `get_ray(u, v)` with `u,v ∈ [0,1]` (v=0 bottom, v=1 top)
+- `ray_through_pixel(x, y, width, height)` for PPM scan order
+- Module docs include Scene 4 eye-move example; +Y is world up

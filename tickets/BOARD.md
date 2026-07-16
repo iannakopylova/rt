@@ -1,6 +1,6 @@
 # Board
 
-_Last updated: 2026-07-12_
+_Last updated: 2026-07-16_
 
 > **Dependency map:** see [DEPENDENCIES.md](./DEPENDENCIES.md) for which tickets block which.
 > **Branch naming:** `ticket/RT-XXX-short-title` — see [../docs/BRANCHING.md](../docs/BRANCHING.md)
@@ -8,7 +8,7 @@ _Last updated: 2026-07-12_
 | Person | Active ticket | Next up |
 |--------|---------------|---------|
 | **Iana** | RT-009 | RT-010 |
-| **Sofia** | RT-003 or RT-004 | RT-005–007 |
+| **Sofia** | RT-004 | RT-005–007 |
 | **Andriana** | RT-015 outline | RT-008 (after RT-009) |
 
 ---
@@ -25,7 +25,6 @@ _Last updated: 2026-07-12_
 
 | ID | Title | Priority | Epic | Assignee |
 |----|-------|----------|------|----------|
-| [RT-003](./RT-003-camera.md) | Camera (position, angle, FOV) | P0 | foundation | @sofia |
 | [RT-004](./RT-004-sphere.md) | Sphere primitive | P1 | objects | @sofia |
 | [RT-005](./RT-005-plane.md) | Flat plane primitive | P1 | objects | @sofia |
 | [RT-006](./RT-006-cube.md) | Cube primitive | P1 | objects | @sofia |
@@ -56,3 +55,4 @@ _Last updated: 2026-07-12_
 |----|-------|----------|------|----------|
 | [RT-001](./RT-001-project-setup.md) | Cargo project & repo structure | P0 | foundation | @iana |
 | [RT-002](./RT-002-math-primitives.md) | Vec3, Ray, Color types | P0 | foundation | @iana |
+| [RT-003](./RT-003-camera.md) | Camera (position, angle, FOV) | P0 | foundation | @sofia |
