@@ -3,7 +3,7 @@
 use crate::camera::Camera;
 use crate::light::Light;
 use crate::material::Material;
-use crate::objects::{Cube, Plane, Sphere};
+use crate::objects::{Cube, Cylinder, Plane, Sphere};
 use crate::scene::{Object, Scene};
 use crate::vec3::{Color, Vec3};
 
@@ -84,6 +84,70 @@ pub fn scene2_plane_cube(aspect: f64) -> (Scene, Camera) {
     );
 
     (scene, camera)
+}
+
+/// Shared world for Scene 3 / Scene 4 — cube, sphere, cylinder, plane + key light.
+///
+/// RT-014 reuses this layout and only swaps the camera.
+pub fn scene3_world() -> Scene {
+    // --- configurable object layout ---
+    let ground_y = -1.0;
+    let sphere_center = Vec3::new(-1.6, 0.0, -3.8);
+    let sphere_radius = 0.85;
+    let cube_center = Vec3::new(1.6, 0.0, -4.0);
+    let cube_edge = 1.4;
+    let cylinder_mid = Vec3::new(0.0, 0.0, -5.2);
+    let cylinder_radius = 0.55;
+    let cylinder_height = 2.0;
+    let light_pos = Vec3::new(4.0, 6.0, 2.0);
+    // ----------------------------------
+
+    let mut scene = Scene::new().with_ambient(0.08);
+    scene
+        .add(Object::Plane(Plane::ground(
+            ground_y,
+            Material::solid(Color::new(0.55, 0.55, 0.58)),
+        )))
+        .add(Object::Sphere(Sphere::with_albedo(
+            sphere_center,
+            sphere_radius,
+            Color::new(0.9, 0.25, 0.2),
+        )))
+        .add(Object::Cube(Cube::with_albedo(
+            cube_center,
+            cube_edge,
+            Color::new(0.25, 0.45, 0.9),
+        )))
+        .add(Object::Cylinder(Cylinder::with_albedo(
+            cylinder_mid,
+            cylinder_radius,
+            cylinder_height,
+            Color::new(0.2, 0.75, 0.35),
+        )))
+        .add_light(Light::scene1_key(light_pos));
+
+    scene
+}
+
+/// Front camera for Scene 3 (also the default for [`scene3_all`]).
+pub fn scene3_camera_front(aspect: f64) -> Camera {
+    // --- configurable ---
+    let eye = Vec3::new(0.0, 2.0, 4.5);
+    let look_at = Vec3::new(0.0, 0.0, -4.2);
+    let vfov_degrees = 55.0;
+    // --------------------
+    Camera::look_at(
+        eye,
+        look_at,
+        Vec3::new(0.0, 1.0, 0.0),
+        vfov_degrees,
+        aspect,
+    )
+}
+
+/// Scene 3 — all four primitives, front camera.
+pub fn scene3_all(aspect: f64) -> (Scene, Camera) {
+    (scene3_world(), scene3_camera_front(aspect))
 }
 
 #[cfg(test)]
@@ -170,5 +234,48 @@ mod tests {
             &crate::ray::Ray::new(Vec3::new(4.0, 0.5, -1.0), Vec3::new(-1.0, -0.4, 0.0)),
         );
         assert!(open.r + open.g + open.b > under.r + under.g + under.b);
+    }
+
+    #[test]
+    fn scene3_has_all_four_primitives() {
+        let scene = scene3_world();
+        assert_eq!(scene.objects.len(), 4);
+        assert!(scene.objects.iter().any(|o| matches!(o, Object::Plane(_))));
+        assert!(scene.objects.iter().any(|o| matches!(o, Object::Sphere(_))));
+        assert!(scene.objects.iter().any(|o| matches!(o, Object::Cube(_))));
+        assert!(scene
+            .objects
+            .iter()
+            .any(|o| matches!(o, Object::Cylinder(_))));
+        assert_eq!(scene.lights.len(), 1);
+    }
+
+    #[test]
+    fn scene3_rays_hit_each_object_type() {
+        let (scene, cam) = scene3_all(4.0 / 3.0);
+
+        // Sphere on the left of frame.
+        let sphere_hit = scene
+            .hit(&cam.get_ray(0.32, 0.48), 0.001, f64::INFINITY)
+            .unwrap();
+        assert!(sphere_hit.material.albedo.r > 0.5);
+
+        // Cube on the right.
+        let cube_hit = scene
+            .hit(&cam.get_ray(0.68, 0.48), 0.001, f64::INFINITY)
+            .unwrap();
+        assert!(cube_hit.material.albedo.b > cube_hit.material.albedo.r);
+
+        // Cylinder near center / slightly low.
+        let cyl_hit = scene
+            .hit(&cam.get_ray(0.50, 0.42), 0.001, f64::INFINITY)
+            .unwrap();
+        assert!(cyl_hit.material.albedo.g > cyl_hit.material.albedo.r);
+
+        // Ground near bottom of frame.
+        let ground_hit = scene
+            .hit(&cam.get_ray(0.50, 0.12), 0.001, f64::INFINITY)
+            .unwrap();
+        assert!((ground_hit.material.albedo.r - 0.55).abs() < 0.05);
     }
 }

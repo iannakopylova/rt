@@ -6,7 +6,7 @@
 
 # rt Ticket Tracker
 
-Last refreshed: 2026-07-17 (RT-012 Scene 2 done)
+Last refreshed: 2026-07-17 (RT-013 Scene 3 done)
 
 > **Board vs tracker**: [BOARD.md](./BOARD.md) is the live sprint board (who is on what). This file is the full requirements-style tracker: every ticket, deps, acceptance summary, and coverage by epic.
 
@@ -42,7 +42,7 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 |--------|---------------|---------|
 | **Iana** | — (PPM done) | RT-018 bonus / help scenes |
 | **Sofia** | — (objects done) | RT-017 bonus after core |
-| **Andriana** | RT-013 | RT-014 after Scene 3 |
+| **Andriana** | RT-014 | RT-015 docs after Scene 4 |
 
 ---
 
@@ -149,7 +149,7 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 |----|--------|--------|------|------|----------|----------|
 | RT-011 | ✅ | **Scene 1 — sphere only**: one sphere, lighting/shadows, 800×600 PPM. | M | RT-004, RT-008, RT-010 | D8 | @andriana |
 | RT-012 | ✅ | **Scene 2 — plane + cube**: dimmer light than Scene 1, shadows, 800×600 PPM. | M | RT-005, RT-006, RT-008, RT-010 | D9 | @andriana |
-| RT-013 | 🟡 | **Scene 3 — all four objects**: cube + sphere + cylinder + plane, 800×600 PPM. | M | RT-004–007, RT-008, RT-010 | D10 | @andriana |
+| RT-013 | ✅ | **Scene 3 — all four objects**: cube + sphere + cylinder + plane, 800×600 PPM. | M | RT-004–007, RT-008, RT-010 | D10 | @andriana |
 | RT-014 | 🟡 | **Scene 4 — alt camera**: same layout as Scene 3, different camera, 800×600 PPM. | S | RT-003, RT-013 | D11 | @andriana |
 
 ---
@@ -201,7 +201,7 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 | D7 | PPM output | RT-010 | ✅ |
 | D8 | Scene 1 | RT-011 | ✅ |
 | D9 | Scene 2 | RT-012 | ✅ |
-| D10 | Scene 3 | RT-013 | 🟡 |
+| D10 | Scene 3 | RT-013 | ✅ |
 | D11 | Scene 4 | RT-014 | 🟡 |
 | D12 | Documentation | RT-015 | 🟡 |
 | B1 | Reflection | RT-016 | ⬜ |
@@ -212,10 +212,9 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 ## 6) Immediate Next Work Queue
 
-1. **Andriana** — Scene 3 **RT-013**, then alt camera **RT-014**.
+1. **Andriana** — Scene 4 **RT-014** (alt camera on `scene3_world`), then docs **RT-015**.
 2. **Iana** — PPM done; can help scenes or start bonus **RT-018**.
 3. **Sofia** — objects complete; next is bonus **RT-017** after lighting.
-4. Finalize **RT-015** once scenes land.
 
 ---
 
@@ -240,7 +239,7 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 | Phase | Tickets |
 |-------|---------|
-| 4–6 | RT-008 🟢, RT-011 ✅, RT-012 ✅, RT-013 🟡, RT-014 🟡, RT-015 🟡 |
+| 4–6 | RT-008 🟢, RT-011 ✅, RT-012 ✅, RT-013 ✅, RT-014 🟡, RT-015 🟡 |
 | 7 | RT-016 ⬜ |
 
 ---
@@ -249,9 +248,9 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 | Status | Count |
 |--------|-------|
-| ✅ Done | 11 |
+| ✅ Done | 12 |
 | 🟢 In Progress | 1 |
-| 🟡 To Do | 3 |
+| 🟡 To Do | 2 |
 | ⬜ Backlog | 3 |
 | 🔵 In Review | 0 |
 

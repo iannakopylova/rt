@@ -26,6 +26,8 @@ enum SceneId {
     Scene1,
     /// RT-012 — plane + cube, dimmer light.
     Scene2,
+    /// RT-013 — all four objects, front camera.
+    Scene3,
 }
 
 struct Args {
@@ -97,8 +99,9 @@ fn parse_scene(value: Option<&String>) -> Result<SceneId, String> {
     match raw.as_str() {
         "1" | "scene1" | "sphere" => Ok(SceneId::Scene1),
         "2" | "scene2" | "plane-cube" | "cube" => Ok(SceneId::Scene2),
+        "3" | "scene3" | "all" => Ok(SceneId::Scene3),
         other => Err(format!(
-            "unknown scene '{other}' (try: 1 / sphere, 2 / cube)"
+            "unknown scene '{other}' (try: 1 / sphere, 2 / cube, 3 / all)"
         )),
     }
 }
@@ -110,11 +113,13 @@ fn print_usage() {
          Scenes:\n\
            1 | sphere       Scene 1 — sphere only (RT-011)\n\
            2 | cube         Scene 2 — plane + cube, dimmer light (RT-012)\n\
+           3 | all          Scene 3 — all four objects (RT-013)\n\
          \n\
          Defaults: scene 1, {DEFAULT_WIDTH}×{DEFAULT_HEIGHT} (dev). Audit size: 800×600.\n\
          Examples:\n\
            cargo run -- --scene 1 --width 800 --height 600 -o scenes/scene1_sphere.ppm\n\
            cargo run -- --scene 2 --width 800 --height 600 -o scenes/scene2_plane_cube.ppm\n\
+           cargo run -- --scene 3 --width 800 --height 600 -o scenes/scene3_all.ppm\n\
          Without --output, writes a P3 PPM to stdout."
     );
 }
@@ -134,11 +139,13 @@ fn main() {
     let (scene, camera) = match args.scene {
         SceneId::Scene1 => scenes::scene1_sphere(aspect),
         SceneId::Scene2 => scenes::scene2_plane_cube(aspect),
+        SceneId::Scene3 => scenes::scene3_all(aspect),
     };
 
     let scene_label = match args.scene {
         SceneId::Scene1 => "scene1_sphere",
         SceneId::Scene2 => "scene2_plane_cube",
+        SceneId::Scene3 => "scene3_all",
     };
 
     eprintln!(
@@ -227,6 +234,12 @@ mod arg_tests {
                 .unwrap()
                 .scene,
             SceneId::Scene2
+        );
+        assert_eq!(
+            parse_args(&["rt".into(), "-s".into(), "all".into()])
+                .unwrap()
+                .scene,
+            SceneId::Scene3
         );
     }
 }
