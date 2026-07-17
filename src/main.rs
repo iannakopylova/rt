@@ -5,28 +5,31 @@ mod objects;
 mod ppm;
 mod ray;
 mod scene;
+mod scenes;
 mod tracer;
 mod vec3;
 
-use camera::Camera;
-use light::Light;
-use objects::Sphere;
 use ppm::write_ppm_p3;
-use scene::{Object, Scene};
 use std::env;
 use std::fs::File;
 use std::io::{self, Write};
 use std::process;
 use tracer::render_frame;
-use vec3::{Color, Vec3};
 
 /// Defaults for quick local previews. Use `--width 800 --height 600` for audit images.
 const DEFAULT_WIDTH: u32 = 400;
 const DEFAULT_HEIGHT: u32 = 300;
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum SceneId {
+    /// RT-011 — sphere + ground, Scene 1 brightness.
+    Scene1,
+}
+
 struct Args {
     width: u32,
     height: u32,
+    scene: SceneId,
     /// If set, write to this path; otherwise write PPM to stdout.
     output: Option<String>,
 }
@@ -34,6 +37,7 @@ struct Args {
 fn parse_args(argv: &[String]) -> Result<Args, String> {
     let mut width = DEFAULT_WIDTH;
     let mut height = DEFAULT_HEIGHT;
+    let mut scene = SceneId::Scene1;
     let mut output = None;
 
     let mut i = 1;
@@ -46,6 +50,10 @@ fn parse_args(argv: &[String]) -> Result<Args, String> {
             "--height" => {
                 i += 1;
                 height = parse_dim(argv.get(i), "--height")?;
+            }
+            "--scene" | "-s" => {
+                i += 1;
+                scene = parse_scene(argv.get(i))?;
             }
             "--output" | "-o" => {
                 i += 1;
@@ -66,6 +74,7 @@ fn parse_args(argv: &[String]) -> Result<Args, String> {
     Ok(Args {
         width,
         height,
+        scene,
         output,
     })
 }
@@ -81,12 +90,27 @@ fn parse_dim(value: Option<&String>, flag: &str) -> Result<u32, String> {
     Ok(n)
 }
 
+fn parse_scene(value: Option<&String>) -> Result<SceneId, String> {
+    let raw = value.ok_or_else(|| "missing value for --scene".to_string())?;
+    match raw.as_str() {
+        "1" | "scene1" | "sphere" => Ok(SceneId::Scene1),
+        other => Err(format!(
+            "unknown scene '{other}' (try: 1 / sphere)"
+        )),
+    }
+}
+
 fn print_usage() {
     eprintln!(
-        "Usage: rt [--width N] [--height N] [--output FILE]\n\
+        "Usage: rt [--scene ID] [--width N] [--height N] [--output FILE]\n\
          \n\
-         Defaults: {DEFAULT_WIDTH}×{DEFAULT_HEIGHT} (dev). Audit size: 800×600.\n\
-         Without --output, writes a P3 PPM to stdout (e.g. cargo run > out.ppm)."
+         Scenes:\n\
+           1 | sphere   Scene 1 — sphere only (RT-011)\n\
+         \n\
+         Defaults: scene 1, {DEFAULT_WIDTH}×{DEFAULT_HEIGHT} (dev). Audit size: 800×600.\n\
+         Example:\n\
+           cargo run -- --scene 1 --width 800 --height 600 -o scenes/scene1_sphere.ppm\n\
+         Without --output, writes a P3 PPM to stdout."
     );
 }
 
@@ -102,35 +126,33 @@ fn main() {
     };
 
     let aspect = args.width as f64 / args.height as f64;
+    let (scene, camera) = match args.scene {
+        SceneId::Scene1 => scenes::scene1_sphere(aspect),
+    };
 
-    let mut scene = Scene::new().with_ambient(0.08);
-    scene
-        .add(Object::Sphere(Sphere::with_albedo(
-            Vec3::new(0.0, 0.0, -3.0),
-            1.0,
-            Color::new(1.0, 0.25, 0.2),
-        )))
-        .add_light(Light::scene1_key(Vec3::new(2.0, 3.0, 1.0)));
-
-    let cam = Camera::look_at(
-        Vec3::new(0.0, 0.5, 2.0),
-        Vec3::new(0.0, 0.0, -3.0),
-        Vec3::new(0.0, 1.0, 0.0),
-        60.0,
-        aspect,
-    );
+    let scene_label = match args.scene {
+        SceneId::Scene1 => "scene1_sphere",
+    };
 
     eprintln!(
-        "rt: rendering {}×{} → {}",
+        "rt: {scene_label} {}×{} → {}",
         args.width,
         args.height,
         args.output.as_deref().unwrap_or("stdout")
     );
 
-    let pixels = render_frame(&scene, &cam, args.width, args.height);
+    let pixels = render_frame(&scene, &camera, args.width, args.height);
 
     let result = match &args.output {
         Some(path) => {
+            if let Some(parent) = std::path::Path::new(path).parent() {
+                if !parent.as_os_str().is_empty() {
+                    if let Err(e) = std::fs::create_dir_all(parent) {
+                        eprintln!("error: cannot create directory {}: {e}", parent.display());
+                        process::exit(1);
+                    }
+                }
+            }
             let mut file = match File::create(path) {
                 Ok(f) => f,
                 Err(e) => {
@@ -161,23 +183,37 @@ mod arg_tests {
         let args = parse_args(&["rt".into()]).unwrap();
         assert_eq!(args.width, DEFAULT_WIDTH);
         assert_eq!(args.height, DEFAULT_HEIGHT);
+        assert_eq!(args.scene, SceneId::Scene1);
         assert!(args.output.is_none());
     }
 
     #[test]
-    fn custom_size_and_output() {
+    fn scene_and_audit_size() {
         let args = parse_args(&[
             "rt".into(),
+            "--scene".into(),
+            "1".into(),
             "--width".into(),
             "800".into(),
             "--height".into(),
             "600".into(),
             "-o".into(),
-            "out.ppm".into(),
+            "scenes/scene1_sphere.ppm".into(),
         ])
         .unwrap();
+        assert_eq!(args.scene, SceneId::Scene1);
         assert_eq!(args.width, 800);
         assert_eq!(args.height, 600);
-        assert_eq!(args.output.as_deref(), Some("out.ppm"));
+        assert_eq!(args.output.as_deref(), Some("scenes/scene1_sphere.ppm"));
+    }
+
+    #[test]
+    fn scene_aliases() {
+        assert_eq!(
+            parse_args(&["rt".into(), "-s".into(), "sphere".into()])
+                .unwrap()
+                .scene,
+            SceneId::Scene1
+        );
     }
 }
