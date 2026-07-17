@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | To Do |
+| **Status** | In Progress |
 | **Assignee** | @iana |
 | **Priority** | P1 |
 | **Epic** | rendering |
@@ -13,16 +13,16 @@ Implement the main tracing pipeline: for each pixel, cast camera ray, find close
 
 ## Acceptance criteria
 
-- [ ] `Hittable` trait: `hit(ray, t_min, t_max) -> Option<HitRecord>`
-- [ ] Scene holds a list of objects + lights
-- [ ] `trace(ray) -> Color` with closest-hit selection
-- [ ] Background color when no hit (e.g. sky gradient or solid)
+- [x] `Hittable` trait: `hit(ray, t_min, t_max) -> Option<HitRecord>`
+- [x] Scene holds a list of objects + lights
+- [x] `trace(ray) -> Color` with closest-hit selection
+- [x] Background color when no hit (e.g. sky gradient or solid)
+
+## Notes
+
+Filled alongside RT-008 so lighting can cast shadow rays. This is the integration point — Iana can still refine (sky gradient, API polish) before marking Done.
 
 ## Dependencies
 
 - Blocks: RT-008, RT-010, all object tickets
 - Blocked by: RT-002, RT-003, at least one object
-
-## Notes
-
-This is the integration point — coordinate with object owners on the trait API early.
