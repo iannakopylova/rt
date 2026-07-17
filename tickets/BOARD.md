@@ -7,9 +7,9 @@ _Last updated: 2026-07-17_
 
 | Person | Active ticket | Next up |
 |--------|---------------|---------|
-| **Iana** | RT-010 | scenes after PPM |
+| **Iana** | — (PPM done) | RT-018 bonus / help scenes |
 | **Sofia** | — (objects done) | RT-017 (bonus) after core |
-| **Andriana** | RT-008 | RT-015 outline / scenes after lighting |
+| **Andriana** | RT-008 | RT-011 scenes after lighting |
 
 ---
 
@@ -25,7 +25,6 @@ _Last updated: 2026-07-17_
 
 | ID | Title | Priority | Epic | Assignee |
 |----|-------|----------|------|----------|
-| [RT-010](./RT-010-ppm-output.md) | PPM (P3) output & resolution flag | P1 | rendering | @iana |
 | [RT-011](./RT-011-scene-sphere.md) | Scene 1 — sphere only (800×600) | P1 | scenes | @andriana |
 | [RT-012](./RT-012-scene-plane-cube.md) | Scene 2 — plane + cube, dimmer light | P1 | scenes | @andriana |
 | [RT-013](./RT-013-scene-all-objects.md) | Scene 3 — all four objects | P1 | scenes | @andriana |
@@ -48,6 +47,7 @@ _Last updated: 2026-07-17_
 
 | ID | Title | Priority | Epic | Assignee |
 |----|-------|----------|------|----------|
+| [RT-010](./RT-010-ppm-output.md) | PPM (P3) output & resolution flag | P1 | rendering | @iana |
 | [RT-009](./RT-009-ray-tracer-core.md) | Ray tracer core loop | P1 | rendering | @iana |
 | [RT-001](./RT-001-project-setup.md) | Cargo project & repo structure | P0 | foundation | @iana |
 | [RT-002](./RT-002-math-primitives.md) | Vec3, Ray, Color types | P0 | foundation | @iana |

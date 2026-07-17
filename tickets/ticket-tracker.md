@@ -6,7 +6,7 @@
 
 # rt Ticket Tracker
 
-Last refreshed: 2026-07-17 (RT-009 tracer core done)
+Last refreshed: 2026-07-17 (RT-010 PPM output done)
 
 > **Board vs tracker**: [BOARD.md](./BOARD.md) is the live sprint board (who is on what). This file is the full requirements-style tracker: every ticket, deps, acceptance summary, and coverage by epic.
 
@@ -40,9 +40,9 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 
 | Person | Active ticket | Next up |
 |--------|---------------|---------|
-| **Iana** | RT-010 | scenes after PPM |
+| **Iana** | — (PPM done) | RT-018 bonus / help scenes |
 | **Sofia** | — (objects done) | RT-017 bonus after core |
-| **Andriana** | RT-008 | RT-015 outline / scenes after lighting |
+| **Andriana** | RT-008 | RT-011 scenes after lighting |
 
 ---
 
@@ -137,7 +137,7 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 | ID | Status | Ticket | Size | Deps | Coverage | Assignee |
 |----|--------|--------|------|------|----------|----------|
 | RT-008 | 🟢 | **Lights, brightness & shadows**: configurable intensity; Lambertian; shadow rays; Scene 2 dimmer than Scene 1. | L | RT-009, RT-004–007 | D6 | @andriana |
-| RT-010 | 🟡 | **PPM (P3) output**: `P3` header + RGB body; `cargo run > out.ppm`; width/height flag or const. | M | RT-009 | D7 | @iana |
+| RT-010 | ✅ | **PPM (P3) output**: `P3` header + RGB body; `cargo run > out.ppm`; `--width` / `--height` / `--output`. | M | RT-009 | D7 | @iana |
 
 ---
 
@@ -198,7 +198,7 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 | D4 | Four primitives | RT-004 ✅, RT-005 ✅, RT-006 ✅, RT-007 ✅ | ✅ |
 | D5 | Tracer core / closest hit | RT-009 | ✅ |
 | D6 | Lights & shadows | RT-008 | 🟢 |
-| D7 | PPM output | RT-010 | 🟡 |
+| D7 | PPM output | RT-010 | ✅ |
 | D8 | Scene 1 | RT-011 | 🟡 |
 | D9 | Scene 2 | RT-012 | 🟡 |
 | D10 | Scene 3 | RT-013 | 🟡 |
@@ -212,10 +212,10 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 ## 6) Immediate Next Work Queue
 
-1. **Iana** — start **RT-010** (PPM write from `render_frame` buffer).
-2. **Sofia** — objects complete; next is bonus **RT-017** after lighting, or help review.
-3. **Andriana** — finish / review **RT-008**; then scenes **RT-011+** once PPM lands.
-4. After RT-010 + RT-008: scenes **RT-011 → RT-014**, finalize **RT-015**.
+1. **Andriana** — finish / review **RT-008**; then scenes **RT-011 → RT-014**.
+2. **Iana** — PPM done; can help scenes or start bonus **RT-018**.
+3. **Sofia** — objects complete; next is bonus **RT-017** after lighting.
+4. Finalize **RT-015** once scenes land.
 
 ---
 
@@ -226,7 +226,7 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 | Phase | Tickets |
 |-------|---------|
 | 0–1 | RT-001 ✅, RT-002 ✅ |
-| 3–4 | RT-009 ✅, RT-010 🟡 |
+| 3–4 | RT-009 ✅, RT-010 ✅ |
 | 7 | RT-018 ⬜ |
 
 ### Sofia — 6 tickets
@@ -249,9 +249,9 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 | Status | Count |
 |--------|-------|
-| ✅ Done | 8 |
+| ✅ Done | 9 |
 | 🟢 In Progress | 1 |
-| 🟡 To Do | 6 |
+| 🟡 To Do | 5 |
 | ⬜ Backlog | 3 |
 | 🔵 In Review | 0 |
 
