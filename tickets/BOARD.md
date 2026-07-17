@@ -7,7 +7,7 @@ _Last updated: 2026-07-17_
 
 | Person | Active ticket | Next up |
 |--------|---------------|---------|
-| **Iana** | RT-009 | RT-010 |
+| **Iana** | RT-010 | scenes after PPM |
 | **Sofia** | — (objects done) | RT-017 (bonus) after core |
 | **Andriana** | RT-008 | RT-015 outline / scenes after lighting |
 
@@ -37,7 +37,6 @@ _Last updated: 2026-07-17_
 | ID | Title | Priority | Epic | Assignee |
 |----|-------|----------|------|----------|
 | [RT-008](./RT-008-lighting-shadows.md) | Lights, brightness & shadows | P1 | rendering | @andriana |
-| [RT-009](./RT-009-ray-tracer-core.md) | Ray tracer core loop | P1 | rendering | @iana |
 
 ## In Review
 
@@ -49,6 +48,7 @@ _Last updated: 2026-07-17_
 
 | ID | Title | Priority | Epic | Assignee |
 |----|-------|----------|------|----------|
+| [RT-009](./RT-009-ray-tracer-core.md) | Ray tracer core loop | P1 | rendering | @iana |
 | [RT-001](./RT-001-project-setup.md) | Cargo project & repo structure | P0 | foundation | @iana |
 | [RT-002](./RT-002-math-primitives.md) | Vec3, Ray, Color types | P0 | foundation | @iana |
 | [RT-003](./RT-003-camera.md) | Camera (position, angle, FOV) | P0 | foundation | @sofia |

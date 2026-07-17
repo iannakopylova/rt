@@ -101,7 +101,6 @@ impl Camera {
     /// Convenience: ray through the center of pixel `(x, y)` for an image of size `width × height`.
     ///
     /// `y = 0` is the top row (PPM order).
-    #[allow(dead_code)] // used by the tracer once RT-009 lands
     pub fn ray_through_pixel(self, x: u32, y: u32, width: u32, height: u32) -> Ray {
         let u = (x as f64 + 0.5) / width as f64;
         let v = 1.0 - (y as f64 + 0.5) / height as f64;
