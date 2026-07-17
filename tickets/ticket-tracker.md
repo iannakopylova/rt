@@ -6,7 +6,7 @@
 
 # rt Ticket Tracker
 
-Last refreshed: 2026-07-17 (RT-008 lighting in progress)
+Last refreshed: 2026-07-17 (RT-009 tracer core done)
 
 > **Board vs tracker**: [BOARD.md](./BOARD.md) is the live sprint board (who is on what). This file is the full requirements-style tracker: every ticket, deps, acceptance summary, and coverage by epic.
 
@@ -40,7 +40,7 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 
 | Person | Active ticket | Next up |
 |--------|---------------|---------|
-| **Iana** | RT-009 | RT-010 |
+| **Iana** | RT-010 | scenes after PPM |
 | **Sofia** | — (objects done) | RT-017 bonus after core |
 | **Andriana** | RT-008 | RT-015 outline / scenes after lighting |
 
@@ -126,7 +126,7 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 
 | ID | Status | Ticket | Size | Deps | Coverage | Assignee |
 |----|--------|--------|------|------|----------|----------|
-| RT-009 | 🟢 | **Ray tracer core**: `Hittable` + `HitRecord`; scene object list; `trace(ray) -> Color`; background on miss. | L | RT-002, RT-003, ≥1 object | D5 | @iana |
+| RT-009 | ✅ | **Ray tracer core**: `Hittable` + `HitRecord`; scene object list; `trace` / `render_frame`; solid or sky background. | L | RT-002, RT-003, ≥1 object | D5 | @iana |
 
 ---
 
@@ -196,7 +196,7 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 | D2 | Math primitives | RT-002 | ✅ |
 | D3 | Camera | RT-003 | ✅ |
 | D4 | Four primitives | RT-004 ✅, RT-005 ✅, RT-006 ✅, RT-007 ✅ | ✅ |
-| D5 | Tracer core / closest hit | RT-009 | 🟢 |
+| D5 | Tracer core / closest hit | RT-009 | ✅ |
 | D6 | Lights & shadows | RT-008 | 🟢 |
 | D7 | PPM output | RT-010 | 🟡 |
 | D8 | Scene 1 | RT-011 | 🟡 |
@@ -212,11 +212,10 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 ## 6) Immediate Next Work Queue
 
-1. **Iana** — finish **RT-009** (trait already stubbed in `objects/mod.rs` as `Hittable`).
-2. **Sofia** — objects complete; next is bonus **RT-017** after tracer/lighting, or help review RT-009.
-3. **Andriana** — keep **RT-015** outline warm; start **RT-008** once RT-009 + objects land.
-4. After RT-009: **Iana → RT-010** in parallel with **Andriana → RT-008**.
-5. Then scenes **RT-011 → RT-014**, finalize **RT-015**.
+1. **Iana** — start **RT-010** (PPM write from `render_frame` buffer).
+2. **Sofia** — objects complete; next is bonus **RT-017** after lighting, or help review.
+3. **Andriana** — finish / review **RT-008**; then scenes **RT-011+** once PPM lands.
+4. After RT-010 + RT-008: scenes **RT-011 → RT-014**, finalize **RT-015**.
 
 ---
 
@@ -227,7 +226,7 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 | Phase | Tickets |
 |-------|---------|
 | 0–1 | RT-001 ✅, RT-002 ✅ |
-| 3–4 | RT-009 🟢, RT-010 🟡 |
+| 3–4 | RT-009 ✅, RT-010 🟡 |
 | 7 | RT-018 ⬜ |
 
 ### Sofia — 6 tickets
@@ -250,8 +249,8 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 | Status | Count |
 |--------|-------|
-| ✅ Done | 7 |
-| 🟢 In Progress | 2 |
+| ✅ Done | 8 |
+| 🟢 In Progress | 1 |
 | 🟡 To Do | 6 |
 | ⬜ Backlog | 3 |
 | 🔵 In Review | 0 |

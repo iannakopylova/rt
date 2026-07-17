@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | In Progress |
+| **Status** | Done |
 | **Assignee** | @iana |
 | **Priority** | P1 |
 | **Epic** | rendering |
@@ -20,7 +20,7 @@ Implement the main tracing pipeline: for each pixel, cast camera ray, find close
 
 ## Notes
 
-Filled alongside RT-008 so lighting can cast shadow rays. This is the integration point — Iana can still refine (sky gradient, API polish) before marking Done.
+`Background::Solid` / `Background::Sky`, `trace`, `trace_pixel`, and `render_frame` live in `scene` / `tracer`. PPM encoding is RT-010.
 
 ## Dependencies
 

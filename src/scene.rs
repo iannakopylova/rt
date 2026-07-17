@@ -1,9 +1,39 @@
-//! Scene container: objects + lights (shared by RT-008 / RT-009).
+//! Scene container: objects + lights (RT-009).
 
 use crate::light::Light;
 use crate::objects::{Cube, Cylinder, HitRecord, Hittable, Plane, Sphere};
 use crate::ray::Ray;
 use crate::vec3::Color;
+
+/// What to show when a primary ray misses every object.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Background {
+    /// Flat color (useful for tests and controlled scenes).
+    Solid(Color),
+    /// Vertical lerp from `horizon` (down) to `zenith` (up), based on ray direction.
+    Sky { zenith: Color, horizon: Color },
+}
+
+impl Background {
+    /// Classic light-blue sky (white near the horizon, blue at the zenith).
+    pub fn default_sky() -> Self {
+        Self::Sky {
+            zenith: Color::new(0.5, 0.7, 1.0),
+            horizon: Color::new(1.0, 1.0, 1.0),
+        }
+    }
+
+    pub fn color_for_ray(self, ray: &Ray) -> Color {
+        match self {
+            Self::Solid(color) => color,
+            Self::Sky { zenith, horizon } => {
+                // Map direction.y ∈ [-1, 1] → t ∈ [0, 1] (0 = down, 1 = up).
+                let t = (ray.direction.y + 1.0) * 0.5;
+                horizon * (1.0 - t) + zenith * t
+            }
+        }
+    }
+}
 
 /// One scene primitive; enum keeps the world heap-free and object-safe-free.
 #[derive(Clone, Debug)]
@@ -25,14 +55,14 @@ impl Hittable for Object {
     }
 }
 
-/// World state for tracing: hittables, lights, and ambient level.
+/// World state for tracing: hittables, lights, and background.
 #[derive(Clone, Debug)]
 pub struct Scene {
     pub objects: Vec<Object>,
     pub lights: Vec<Light>,
     /// Ambient term passed to Lambertian shading (typically ~0.05–0.1).
     pub ambient: f64,
-    pub background: Color,
+    pub background: Background,
 }
 
 impl Scene {
@@ -41,7 +71,7 @@ impl Scene {
             objects: Vec::new(),
             lights: Vec::new(),
             ambient: crate::light::DEFAULT_AMBIENT,
-            background: Color::new(0.55, 0.7, 0.95),
+            background: Background::default_sky(),
         }
     }
 
@@ -60,9 +90,13 @@ impl Scene {
         self
     }
 
-    pub fn with_background(mut self, background: Color) -> Self {
+    pub fn with_background(mut self, background: Background) -> Self {
         self.background = background;
         self
+    }
+
+    pub fn with_solid_background(self, color: Color) -> Self {
+        self.with_background(Background::Solid(color))
     }
 
     /// Closest intersection in `[t_min, t_max]`.
