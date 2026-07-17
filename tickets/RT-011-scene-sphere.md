@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | To Do |
+| **Status** | Done |
 | **Assignee** | @andriana |
 | **Priority** | P1 |
 | **Epic** | scenes |
@@ -13,10 +13,10 @@ Build and export the first mandatory audit image: a scene containing only a sphe
 
 ## Acceptance criteria
 
-- [ ] One sphere with configurable position
-- [ ] Lighting with shadows visible on ground or background
-- [ ] Final image: **800×600** PPM saved (e.g. `scenes/scene1_sphere.ppm`)
-- [ ] Reproducible via CLI or documented `cargo run` command
+- [x] One sphere with configurable position
+- [x] Lighting with shadows visible on ground or background
+- [x] Final image: **800×600** PPM saved (e.g. `scenes/scene1_sphere.ppm`)
+- [x] Reproducible via CLI or documented `cargo run` command
 
 ## Dependencies
 
@@ -25,4 +25,5 @@ Build and export the first mandatory audit image: a scene containing only a sphe
 
 ## Notes
 
-Use smaller resolution while iterating; regenerate at 800×600 for submission.
+Ground plane is included so the sphere casts a visible shadow (not counted as a second “subject”).
+Knobs live in `src/scenes.rs` (`scene1_sphere`). CLI: `--scene 1`.
