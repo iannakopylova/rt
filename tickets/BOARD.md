@@ -9,7 +9,7 @@ _Last updated: 2026-07-17_
 |--------|---------------|---------|
 | **Iana** | RT-009 | RT-010 |
 | **Sofia** | — (objects done) | RT-017 (bonus) after core |
-| **Andriana** | RT-015 outline | RT-008 (after RT-009) |
+| **Andriana** | RT-008 | RT-015 outline / scenes after lighting |
 
 ---
 
@@ -25,7 +25,6 @@ _Last updated: 2026-07-17_
 
 | ID | Title | Priority | Epic | Assignee |
 |----|-------|----------|------|----------|
-| [RT-008](./RT-008-lighting-shadows.md) | Lights, brightness & shadows | P1 | rendering | @andriana |
 | [RT-010](./RT-010-ppm-output.md) | PPM (P3) output & resolution flag | P1 | rendering | @iana |
 | [RT-011](./RT-011-scene-sphere.md) | Scene 1 — sphere only (800×600) | P1 | scenes | @andriana |
 | [RT-012](./RT-012-scene-plane-cube.md) | Scene 2 — plane + cube, dimmer light | P1 | scenes | @andriana |
@@ -37,6 +36,7 @@ _Last updated: 2026-07-17_
 
 | ID | Title | Priority | Epic | Assignee |
 |----|-------|----------|------|----------|
+| [RT-008](./RT-008-lighting-shadows.md) | Lights, brightness & shadows | P1 | rendering | @andriana |
 | [RT-009](./RT-009-ray-tracer-core.md) | Ray tracer core loop | P1 | rendering | @iana |
 
 ## In Review

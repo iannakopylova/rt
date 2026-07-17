@@ -9,20 +9,48 @@ mod tracer;
 mod vec3;
 
 use camera::Camera;
+use light::{Light, SCENE1_LIGHT_INTENSITY, SCENE2_LIGHT_INTENSITY};
 use material::Material;
-use objects::{Cube, Cylinder, Hittable, Plane, Sphere};
-use ray::Ray;
+use objects::{Cube, Cylinder, Plane, Sphere};
+use scene::{Object, Scene};
+use tracer::trace;
 use vec3::{Color, Vec3};
 
 fn main() {
-    println!("rt ray tracer — foundation ready (RT-001 .. RT-007)");
+    println!("rt ray tracer — lighting & shadows (RT-008)");
 
-    // Quick sanity check of math + camera + primitives (not PPM output yet).
-    let v = Vec3::new(1.0, 2.0, 3.0).normalize();
-    let ray = Ray::new(Vec3::ZERO, v);
-    let _ = ray.at(1.0);
-    let _color = Color::WHITE.clamp().to_rgb8();
-    let _bg = Color::BLACK.to_rgb8();
+    // Scene 1 style: bright key light.
+    let mut bright = Scene::new().with_ambient(0.08);
+    bright
+        .add(Object::Sphere(Sphere::with_albedo(
+            Vec3::new(0.0, 0.0, -5.0),
+            1.0,
+            Color::new(1.0, 0.2, 0.2),
+        )))
+        .add(Object::Plane(Plane::ground(
+            -1.0,
+            Material::solid(Color::new(0.4, 0.4, 0.4)),
+        )))
+        .add_light(Light::scene1_key(Vec3::new(2.0, 4.0, 2.0)));
+
+    // Scene 2 style: same layout idea, lower brightness.
+    let mut dim = Scene::new().with_ambient(0.08);
+    dim.add(Object::Cube(Cube::with_albedo(
+        Vec3::new(1.5, 0.0, -4.0),
+        1.0,
+        Color::new(0.2, 0.5, 1.0),
+    )))
+    .add(Object::Cylinder(Cylinder::with_albedo(
+        Vec3::new(-1.5, 0.0, -4.0),
+        0.5,
+        2.0,
+        Color::new(0.2, 0.8, 0.3),
+    )))
+    .add(Object::Plane(Plane::ground(
+        -1.0,
+        Material::solid(Color::new(0.4, 0.4, 0.4)),
+    )))
+    .add_light(Light::scene2_key(Vec3::new(2.0, 4.0, 2.0)));
 
     let cam = Camera::look_at(
         Vec3::new(0.0, 1.0, 4.0),
@@ -31,44 +59,17 @@ fn main() {
         60.0,
         4.0 / 3.0,
     );
+
     let center = cam.get_ray(0.5, 0.5);
-    let _ = (cam.eye(), cam.forward(), center);
+    let c1 = trace(&bright, &center);
+    let c2 = trace(&dim, &center);
 
-    let sphere = Sphere::with_albedo(Vec3::new(0.0, 0.0, -5.0), 1.0, Color::new(1.0, 0.2, 0.2));
-    if let Some(hit) = sphere.hit(
-        &Ray::new(Vec3::ZERO, Vec3::new(0.0, 0.0, -1.0)),
-        0.001,
-        f64::INFINITY,
-    ) {
-        let _ = (hit.t, hit.point, hit.normal, hit.front_face, hit.material);
-    }
-
-    let ground = Plane::ground(-1.0, Material::solid(Color::new(0.4, 0.4, 0.4)));
-    let _wall = Plane::with_albedo(
-        Vec3::new(0.0, 0.0, -10.0),
-        Vec3::new(0.0, 0.0, 1.0),
-        Color::new(0.8, 0.8, 0.9),
+    println!(
+        "scene1 intensity={SCENE1_LIGHT_INTENSITY:.2} center≈({:.3},{:.3},{:.3})",
+        c1.r, c1.g, c1.b
     );
-    let _ = ground.hit(
-        &Ray::new(Vec3::new(0.0, 1.0, 0.0), Vec3::new(0.0, -1.0, 0.0)),
-        0.001,
-        f64::INFINITY,
-    );
-
-    let cube = Cube::with_albedo(Vec3::new(1.5, 0.0, -4.0), 1.0, Color::new(0.2, 0.5, 1.0));
-    let _ = (
-        cube.center(),
-        cube.hit(
-            &Ray::new(Vec3::ZERO, Vec3::new(0.3, 0.0, -1.0)),
-            0.001,
-            f64::INFINITY,
-        ),
-    );
-
-    let cyl = Cylinder::with_albedo(Vec3::new(-1.5, 0.0, -4.0), 0.5, 2.0, Color::new(0.2, 0.8, 0.3));
-    let _ = cyl.hit(
-        &Ray::new(Vec3::ZERO, Vec3::new(-0.3, 0.0, -1.0)),
-        0.001,
-        f64::INFINITY,
+    println!(
+        "scene2 intensity={SCENE2_LIGHT_INTENSITY:.2} center≈({:.3},{:.3},{:.3})",
+        c2.r, c2.g, c2.b
     );
 }

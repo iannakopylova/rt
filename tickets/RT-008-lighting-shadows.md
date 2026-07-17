@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | To Do |
+| **Status** | In Progress |
 | **Assignee** | @andriana |
 | **Priority** | P1 |
 | **Epic** | rendering |
@@ -13,10 +13,11 @@ Add at least one point or directional light with adjustable brightness. Implemen
 
 ## Acceptance criteria
 
-- [ ] Light intensity/brightness configurable per scene
-- [ ] Simple diffuse (Lambertian) shading
-- [ ] Shadow rays with small offset to avoid self-intersection
-- [ ] Scene 2 uses **lower brightness** than Scene 1
+- [x] Light intensity/brightness configurable per scene
+- [x] Simple diffuse (Lambertian) shading
+- [x] Shadow rays with small offset to avoid self-intersection
+- [x] Scene 2 uses **lower brightness** than Scene 1
+  (`SCENE2_LIGHT_INTENSITY` < `SCENE1_LIGHT_INTENSITY`; helpers `Light::scene1_key` / `Light::scene2_key`)
 
 ## Dependencies
 

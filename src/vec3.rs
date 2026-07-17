@@ -153,6 +153,47 @@ impl From<Vec3> for Color {
     }
 }
 
+impl Add for Color {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self {
+        Self::new(self.r + rhs.r, self.g + rhs.g, self.b + rhs.b)
+    }
+}
+
+impl AddAssign for Color {
+    fn add_assign(&mut self, rhs: Self) {
+        self.r += rhs.r;
+        self.g += rhs.g;
+        self.b += rhs.b;
+    }
+}
+
+impl Mul<f64> for Color {
+    type Output = Self;
+
+    fn mul(self, scalar: f64) -> Self {
+        Self::new(self.r * scalar, self.g * scalar, self.b * scalar)
+    }
+}
+
+impl Mul<Color> for f64 {
+    type Output = Color;
+
+    fn mul(self, color: Color) -> Color {
+        color * self
+    }
+}
+
+impl Mul for Color {
+    type Output = Self;
+
+    /// Component-wise multiply (albedo × light).
+    fn mul(self, rhs: Self) -> Self {
+        Self::new(self.r * rhs.r, self.g * rhs.g, self.b * rhs.b)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

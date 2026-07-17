@@ -6,7 +6,7 @@
 
 # rt Ticket Tracker
 
-Last refreshed: 2026-07-17 (RT-007 done — all objects)
+Last refreshed: 2026-07-17 (RT-008 lighting in progress)
 
 > **Board vs tracker**: [BOARD.md](./BOARD.md) is the live sprint board (who is on what). This file is the full requirements-style tracker: every ticket, deps, acceptance summary, and coverage by epic.
 
@@ -42,7 +42,7 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 |--------|---------------|---------|
 | **Iana** | RT-009 | RT-010 |
 | **Sofia** | — (objects done) | RT-017 bonus after core |
-| **Andriana** | RT-015 outline (draft OK) | RT-008 (after RT-009 + objects) |
+| **Andriana** | RT-008 | RT-015 outline / scenes after lighting |
 
 ---
 
@@ -136,7 +136,7 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 
 | ID | Status | Ticket | Size | Deps | Coverage | Assignee |
 |----|--------|--------|------|------|----------|----------|
-| RT-008 | 🟡 | **Lights, brightness & shadows**: configurable intensity; Lambertian; shadow rays; Scene 2 dimmer than Scene 1. | L | RT-009, RT-004–007 | D6 | @andriana |
+| RT-008 | 🟢 | **Lights, brightness & shadows**: configurable intensity; Lambertian; shadow rays; Scene 2 dimmer than Scene 1. | L | RT-009, RT-004–007 | D6 | @andriana |
 | RT-010 | 🟡 | **PPM (P3) output**: `P3` header + RGB body; `cargo run > out.ppm`; width/height flag or const. | M | RT-009 | D7 | @iana |
 
 ---
@@ -197,7 +197,7 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 | D3 | Camera | RT-003 | ✅ |
 | D4 | Four primitives | RT-004 ✅, RT-005 ✅, RT-006 ✅, RT-007 ✅ | ✅ |
 | D5 | Tracer core / closest hit | RT-009 | 🟢 |
-| D6 | Lights & shadows | RT-008 | 🟡 |
+| D6 | Lights & shadows | RT-008 | 🟢 |
 | D7 | PPM output | RT-010 | 🟡 |
 | D8 | Scene 1 | RT-011 | 🟡 |
 | D9 | Scene 2 | RT-012 | 🟡 |
@@ -241,7 +241,7 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 | Phase | Tickets |
 |-------|---------|
-| 4–6 | RT-008 🟡, RT-011 🟡, RT-012 🟡, RT-013 🟡, RT-014 🟡, RT-015 🟡 |
+| 4–6 | RT-008 🟢, RT-011 🟡, RT-012 🟡, RT-013 🟡, RT-014 🟡, RT-015 🟡 |
 | 7 | RT-016 ⬜ |
 
 ---
@@ -251,8 +251,8 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 | Status | Count |
 |--------|-------|
 | ✅ Done | 7 |
-| 🟢 In Progress | 1 |
-| 🟡 To Do | 7 |
+| 🟢 In Progress | 2 |
+| 🟡 To Do | 6 |
 | ⬜ Backlog | 3 |
 | 🔵 In Review | 0 |
 
