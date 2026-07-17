@@ -18,24 +18,22 @@ cargo run --release -- --scene 1 --width 800 --height 600 -o scenes/scene1_spher
 
 ## Scene 2 — plane + cube (RT-012)
 
-Same light position as Scene 1, but **lower** brightness (`0.45`).
-
 ```powershell
 cargo run --release -- --scene 2 --width 800 --height 600 -o scenes/scene2_plane_cube.ppm
 ```
 
 ## Scene 3 — all four objects (RT-013)
 
-Cube + sphere + cylinder + plane. Layout is `scene3_world()` (reused by Scene 4).
-
 ```powershell
 cargo run --release -- --scene 3 --width 800 --height 600 -o scenes/scene3_all.ppm
 ```
 
-Dev preview:
+## Scene 4 — alternate camera (RT-014)
+
+Same `scene3_world()` as Scene 3; camera from `scene3_camera_alt` (side/elevated).
 
 ```powershell
-cargo run -- --scene 3 --width 400 --height 300 -o scenes/scene3_preview.ppm
+cargo run --release -- --scene 4 --width 800 --height 600 -o scenes/scene4_alt_camera.ppm
 ```
 
-Knobs: `src/scenes.rs` (`scene1_sphere`, `scene2_plane_cube`, `scene3_world` / `scene3_camera_front`).
+Knobs: `src/scenes.rs` (`scene3_world`, `scene3_camera_front`, `scene3_camera_alt`).
