@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | To Do |
+| **Status** | Done |
 | **Assignee** | @andriana |
 | **Priority** | P1 |
 | **Epic** | scenes |
@@ -13,9 +13,9 @@ Third audit scene: one cube, one sphere, one cylinder, and one flat plane in the
 
 ## Acceptance criteria
 
-- [ ] All four primitives visible and correctly lit
-- [ ] Object positions configurable before render
-- [ ] Final image: **800×600** PPM (e.g. `scenes/scene3_all.ppm`)
+- [x] All four primitives visible and correctly lit
+- [x] Object positions configurable before render
+- [x] Final image: **800×600** PPM (e.g. `scenes/scene3_all.ppm`)
 
 ## Dependencies
 
@@ -24,4 +24,6 @@ Third audit scene: one cube, one sphere, one cylinder, and one flat plane in the
 
 ## Notes
 
-Reuse scene definition for RT-014; only camera should change.
+World lives in `scene3_world()`; front camera in `scene3_camera_front()`.
+RT-014 should reuse the world and only change the camera.
+CLI: `--scene 3`.
