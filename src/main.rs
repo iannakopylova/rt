@@ -28,6 +28,8 @@ enum SceneId {
     Scene2,
     /// RT-013 — all four objects, front camera.
     Scene3,
+    /// RT-014 — same world as Scene 3, alternate camera.
+    Scene4,
 }
 
 struct Args {
@@ -100,8 +102,9 @@ fn parse_scene(value: Option<&String>) -> Result<SceneId, String> {
         "1" | "scene1" | "sphere" => Ok(SceneId::Scene1),
         "2" | "scene2" | "plane-cube" | "cube" => Ok(SceneId::Scene2),
         "3" | "scene3" | "all" => Ok(SceneId::Scene3),
+        "4" | "scene4" | "alt" | "alt-camera" => Ok(SceneId::Scene4),
         other => Err(format!(
-            "unknown scene '{other}' (try: 1 / sphere, 2 / cube, 3 / all)"
+            "unknown scene '{other}' (try: 1 / sphere, 2 / cube, 3 / all, 4 / alt)"
         )),
     }
 }
@@ -114,12 +117,12 @@ fn print_usage() {
            1 | sphere       Scene 1 — sphere only (RT-011)\n\
            2 | cube         Scene 2 — plane + cube, dimmer light (RT-012)\n\
            3 | all          Scene 3 — all four objects (RT-013)\n\
+           4 | alt          Scene 4 — same as 3, alternate camera (RT-014)\n\
          \n\
          Defaults: scene 1, {DEFAULT_WIDTH}×{DEFAULT_HEIGHT} (dev). Audit size: 800×600.\n\
          Examples:\n\
-           cargo run -- --scene 1 --width 800 --height 600 -o scenes/scene1_sphere.ppm\n\
-           cargo run -- --scene 2 --width 800 --height 600 -o scenes/scene2_plane_cube.ppm\n\
            cargo run -- --scene 3 --width 800 --height 600 -o scenes/scene3_all.ppm\n\
+           cargo run -- --scene 4 --width 800 --height 600 -o scenes/scene4_alt_camera.ppm\n\
          Without --output, writes a P3 PPM to stdout."
     );
 }
@@ -140,12 +143,14 @@ fn main() {
         SceneId::Scene1 => scenes::scene1_sphere(aspect),
         SceneId::Scene2 => scenes::scene2_plane_cube(aspect),
         SceneId::Scene3 => scenes::scene3_all(aspect),
+        SceneId::Scene4 => scenes::scene4_alt_camera(aspect),
     };
 
     let scene_label = match args.scene {
         SceneId::Scene1 => "scene1_sphere",
         SceneId::Scene2 => "scene2_plane_cube",
         SceneId::Scene3 => "scene3_all",
+        SceneId::Scene4 => "scene4_alt_camera",
     };
 
     eprintln!(
@@ -240,6 +245,12 @@ mod arg_tests {
                 .unwrap()
                 .scene,
             SceneId::Scene3
+        );
+        assert_eq!(
+            parse_args(&["rt".into(), "-s".into(), "4".into()])
+                .unwrap()
+                .scene,
+            SceneId::Scene4
         );
     }
 }

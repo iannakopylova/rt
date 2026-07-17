@@ -145,9 +145,30 @@ pub fn scene3_camera_front(aspect: f64) -> Camera {
     )
 }
 
+/// Alternate camera for Scene 4 — same look-at, different eye (side / elevated angle).
+pub fn scene3_camera_alt(aspect: f64) -> Camera {
+    // --- configurable ---
+    let eye = Vec3::new(4.2, 2.8, 1.5);
+    let look_at = Vec3::new(0.0, 0.0, -4.2);
+    let vfov_degrees = 55.0;
+    // --------------------
+    Camera::look_at(
+        eye,
+        look_at,
+        Vec3::new(0.0, 1.0, 0.0),
+        vfov_degrees,
+        aspect,
+    )
+}
+
 /// Scene 3 — all four primitives, front camera.
 pub fn scene3_all(aspect: f64) -> (Scene, Camera) {
     (scene3_world(), scene3_camera_front(aspect))
+}
+
+/// Scene 4 — identical world as Scene 3, alternate camera.
+pub fn scene4_alt_camera(aspect: f64) -> (Scene, Camera) {
+    (scene3_world(), scene3_camera_alt(aspect))
 }
 
 #[cfg(test)]
@@ -277,5 +298,23 @@ mod tests {
             .hit(&cam.get_ray(0.50, 0.12), 0.001, f64::INFINITY)
             .unwrap();
         assert!((ground_hit.material.albedo.r - 0.55).abs() < 0.05);
+    }
+
+    #[test]
+    fn scene4_reuses_scene3_world() {
+        let (s3, _) = scene3_all(4.0 / 3.0);
+        let (s4, _) = scene4_alt_camera(4.0 / 3.0);
+        assert_eq!(s3.objects.len(), s4.objects.len());
+        assert_eq!(s3.lights.len(), s4.lights.len());
+        assert_eq!(s3.lights[0].intensity(), s4.lights[0].intensity());
+    }
+
+    #[test]
+    fn scene4_camera_differs_from_scene3() {
+        let aspect = 4.0 / 3.0;
+        let (_, c3) = scene3_all(aspect);
+        let (_, c4) = scene4_alt_camera(aspect);
+        assert_ne!(c3.eye(), c4.eye());
+        assert_ne!(c3.get_ray(0.5, 0.5).direction, c4.get_ray(0.5, 0.5).direction);
     }
 }

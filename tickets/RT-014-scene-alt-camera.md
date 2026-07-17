@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | To Do |
+| **Status** | Done |
 | **Assignee** | @andriana |
 | **Priority** | P1 |
 | **Epic** | scenes |
@@ -13,9 +13,9 @@ Fourth audit scene: **identical objects** as Scene 3, but camera moved to a diff
 
 ## Acceptance criteria
 
-- [ ] Same object layout as Scene 3
-- [ ] Camera position/angle clearly different (different perspective)
-- [ ] Final image: **800×600** PPM (e.g. `scenes/scene4_alt_camera.ppm`)
+- [x] Same object layout as Scene 3
+- [x] Camera position/angle clearly different (different perspective)
+- [x] Final image: **800×600** PPM (e.g. `scenes/scene4_alt_camera.ppm`)
 
 ## Dependencies
 
@@ -24,4 +24,5 @@ Fourth audit scene: **identical objects** as Scene 3, but camera moved to a diff
 
 ## Notes
 
-Ideal: one scene function + two camera presets to avoid duplication.
+`scene4_alt_camera` = `scene3_world()` + `scene3_camera_alt`.
+CLI: `--scene 4`.
