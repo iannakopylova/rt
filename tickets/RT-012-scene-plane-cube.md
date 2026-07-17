@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | To Do |
+| **Status** | Done |
 | **Assignee** | @andriana |
 | **Priority** | P1 |
 | **Epic** | scenes |
@@ -13,10 +13,10 @@ Second audit scene: flat plane and cube with **lower brightness** than Scene 1.
 
 ## Acceptance criteria
 
-- [ ] One plane + one cube, positions configurable
-- [ ] Light brightness clearly lower than Scene 1
-- [ ] Shadows present
-- [ ] Final image: **800×600** PPM (e.g. `scenes/scene2_plane_cube.ppm`)
+- [x] One plane + one cube, positions configurable
+- [x] Light brightness clearly lower than Scene 1
+- [x] Shadows present
+- [x] Final image: **800×600** PPM (e.g. `scenes/scene2_plane_cube.ppm`)
 
 ## Dependencies
 
@@ -25,4 +25,5 @@ Second audit scene: flat plane and cube with **lower brightness** than Scene 1.
 
 ## Notes
 
-Document brightness values used in each scene for the auditor doc.
+Brightness: Scene 1 = `1.0`, Scene 2 = `0.45` (documented in `scenes/README.md`).
+CLI: `--scene 2`. Knobs in `scene2_plane_cube` (`src/scenes.rs`).
