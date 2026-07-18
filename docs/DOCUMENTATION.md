@@ -11,6 +11,7 @@ Auditor-facing guide for the Rust ray tracer in this repository (`rt`). It cover
 | Primitives | Sphere, axis-aligned cube, infinite/Y-ground plane, finite Y-cylinder |
 | Scene | Object list + lights + ambient (`src/scene.rs`) |
 | Shading | Lambertian diffuse, point / directional lights, shadow rays (`src/light.rs`) |
+| Reflection (bonus) | `Material::metal` + `-r` / `--reflection` (`src/tracer.rs`, RT-016) |
 | Output | ASCII **P3 PPM** (`src/ppm.rs`) |
 | CLI | `--scene`, `--width`, `--height`, `--output` (`src/main.rs`) |
 
@@ -136,6 +137,30 @@ To make Scene 2 look brighter or darker, edit `SCENE2_LIGHT_INTENSITY` in `src/l
 
 ---
 
+## Reflection (bonus RT-016)
+
+Mark a material as metal, then enable recursive bounces with `-r`:
+
+```rust
+use crate::material::Material;
+use crate::objects::Sphere;
+use crate::vec3::{Color, Vec3};
+
+let mirror = Sphere::new(
+    Vec3::new(0.0, 0.0, -4.0),
+    1.0,
+    Material::metal(Color::WHITE, 0.9), // reflectivity 0..1
+);
+```
+
+```bash
+cargo run --release -- -s reflection -r --max-depth 5 --width 800 --height 600 -o scenes/scene_reflection.ppm
+```
+
+Without `-r`, reflective materials shade as diffuse only (fast path for audit scenes 1–4).
+
+---
+
 ## Changing the camera (position & angle)
 
 ```rust
@@ -177,10 +202,12 @@ cargo run --release -- --scene 1 --width 800 --height 600 > out.ppm
 
 | Flag | Short | Meaning |
 |------|-------|---------|
-| `--scene ID` | `-s` | `1`/`sphere`, `2`/`cube`, `3`/`all`, `4`/`alt` |
+| `--scene ID` | `-s` | `1`/`sphere`, `2`/`cube`, `3`/`all`, `4`/`alt`, `5`/`reflection` |
 | `--width N` | `-w` | Image width (pixels) |
 | `--height N` | | Image height (pixels) |
 | `--output PATH` | `-o` | Output file (omit → stdout) |
+| `--reflection` | `-r` | Enable recursive reflections (RT-016) |
+| `--max-depth N` | | Max bounce depth when `-r` is set (default 5) |
 | `--help` | | Usage |
 
 ### From code

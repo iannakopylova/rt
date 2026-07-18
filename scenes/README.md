@@ -36,4 +36,12 @@ Same `scene3_world()` as Scene 3; camera from `scene3_camera_alt` (side/elevated
 cargo run --release -- --scene 4 --width 800 --height 600 -o scenes/scene4_alt_camera.ppm
 ```
 
-Knobs: `src/scenes.rs` (`scene3_world`, `scene3_camera_front`, `scene3_camera_alt`).
+## Reflection demo (RT-016)
+
+Metal sphere + red cube. Requires `-r` to see mirrors.
+
+```powershell
+cargo run --release -- -s reflection -r --width 800 --height 600 -o scenes/scene_reflection.ppm
+```
+
+Knobs: `src/scenes.rs` (`scene3_world`, `scene3_camera_front`, `scene3_camera_alt`, `scene_reflection_demo`).

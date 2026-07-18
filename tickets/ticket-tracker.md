@@ -6,7 +6,7 @@
 
 # rt Ticket Tracker
 
-Last refreshed: 2026-07-18 (RT-015 documentation done)
+Last refreshed: 2026-07-18 (RT-016 reflection done)
 
 > **Board vs tracker**: [BOARD.md](./BOARD.md) is the live sprint board (who is on what). This file is the full requirements-style tracker: every ticket, deps, acceptance summary, and coverage by epic.
 
@@ -42,7 +42,7 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 |--------|---------------|---------|
 | **Iana** | — (PPM done) | RT-018 bonus |
 | **Sofia** | — (objects done) | RT-017 bonus |
-| **Andriana** | — (docs done) | bonus RT-016 |
+| **Andriana** | — (docs + reflection done) | — |
 
 ---
 
@@ -170,7 +170,7 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 
 | ID | Status | Ticket | Size | Deps | Coverage | Assignee |
 |----|--------|--------|------|------|----------|----------|
-| RT-016 | ⬜ | **Reflection**: reflective materials; max bounce depth; CLI flag (e.g. `-r`). | M | RT-008, RT-009 | B1 | @andriana |
+| RT-016 | ✅ | **Reflection**: reflective materials; max bounce depth; CLI flag (e.g. `-r`). | M | RT-008, RT-009 | B1 | @andriana |
 | RT-017 | ⬜ | **Refraction**: Snell's law / glass; CLI flag; demo object. | L | RT-009, RT-016 (recommended) | B2 | @sofia |
 | RT-018 | ⬜ | **Textures**: UV sample albedo; CLI flag (e.g. `-t`); document paths/formats. | M | RT-004–007, RT-009 | B3 | @iana |
 
@@ -204,7 +204,7 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 | D10 | Scene 3 | RT-013 | ✅ |
 | D11 | Scene 4 | RT-014 | ✅ |
 | D12 | Documentation | RT-015 | ✅ |
-| B1 | Reflection | RT-016 | ⬜ |
+| B1 | Reflection | RT-016 | ✅ |
 | B2 | Refraction | RT-017 | ⬜ |
 | B3 | Textures | RT-018 | ⬜ |
 
@@ -212,9 +212,8 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 ## 6) Immediate Next Work Queue
 
-1. **Andriana** — optional bonus **RT-016** (reflection).
+1. **Sofia** — optional bonus **RT-017** (refraction).
 2. **Iana** — optional bonus **RT-018** (textures).
-3. **Sofia** — optional bonus **RT-017** (refraction; after RT-016 recommended).
 
 ---
 
@@ -240,7 +239,7 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 | Phase | Tickets |
 |-------|---------|
 | 4–6 | RT-008 ✅, RT-011 ✅, RT-012 ✅, RT-013 ✅, RT-014 ✅, RT-015 ✅ |
-| 7 | RT-016 ⬜ |
+| 7 | RT-016 ✅ |
 
 ---
 
@@ -248,10 +247,10 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 | Status | Count |
 |--------|-------|
-| ✅ Done | 15 |
+| ✅ Done | 16 |
 | 🟢 In Progress | 0 |
 | 🟡 To Do | 0 |
-| ⬜ Backlog | 3 |
+| ⬜ Backlog | 2 |
 | 🔵 In Review | 0 |
 
 | Priority | Count |

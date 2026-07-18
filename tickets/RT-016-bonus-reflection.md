@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | Backlog |
+| **Status** | Done |
 | **Assignee** | @andriana |
 | **Priority** | P2 |
 | **Epic** | bonus |
@@ -13,10 +13,10 @@ Add reflective materials: recursive reflection rays with a max depth limit.
 
 ## Acceptance criteria
 
-- [ ] Materials can be marked reflective (e.g. metal)
-- [ ] Reflection visible in at least one demo image
-- [ ] Behind CLI flag (e.g. `-r` / `--reflection`) for performance
-- [ ] Max bounce depth configurable
+- [x] Materials can be marked reflective (e.g. metal) → `Material::metal`
+- [x] Reflection visible in at least one demo image → `scenes/scene_reflection.ppm` / `--scene reflection -r`
+- [x] Behind CLI flag (e.g. `-r` / `--reflection`) for performance
+- [x] Max bounce depth configurable → `--max-depth N`
 
 ## Dependencies
 

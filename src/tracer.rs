@@ -1,35 +1,119 @@
 //! Ray tracer core loop (RT-009): closest hit, background, per-pixel render.
+//! RT-016: optional recursive reflections behind [`TraceOptions`].
 
 use crate::camera::Camera;
-use crate::light::shade_lambertian;
+use crate::light::{shade_lambertian, SHADOW_BIAS};
 use crate::ray::Ray;
 use crate::scene::Scene;
-use crate::vec3::Color;
+use crate::vec3::{Color, Vec3};
 
-/// Trace a primary ray: background on miss, Lambertian shade on hit.
+/// Controls recursive reflection (RT-016). When `reflections` is false, all
+/// materials shade as diffuse only (fast path for audit scenes).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct TraceOptions {
+    pub reflections: bool,
+    pub max_depth: u32,
+}
+
+impl Default for TraceOptions {
+    fn default() -> Self {
+        Self {
+            reflections: false,
+            max_depth: 5,
+        }
+    }
+}
+
+impl TraceOptions {
+    pub fn with_reflections(max_depth: u32) -> Self {
+        Self {
+            reflections: true,
+            max_depth: max_depth.max(1),
+        }
+    }
+}
+
+/// Ideal specular reflection: `v` is the incoming direction (need not be unit).
+pub fn reflect(v: Vec3, normal: Vec3) -> Vec3 {
+    let n = normal.normalize();
+    let dir = v.normalize();
+    dir - n * (2.0 * dir.dot(n))
+}
+
+/// Trace a ray: background on miss, Lambertian (+ optional reflection) on hit.
 pub fn trace(scene: &Scene, ray: &Ray) -> Color {
+    trace_with(scene, ray, &TraceOptions::default())
+}
+
+pub fn trace_with(scene: &Scene, ray: &Ray, opts: &TraceOptions) -> Color {
+    trace_recursive(scene, ray, opts, 0)
+}
+
+fn trace_recursive(scene: &Scene, ray: &Ray, opts: &TraceOptions, depth: u32) -> Color {
     match scene.hit(ray, 0.001, f64::INFINITY) {
-        Some(hit) => shade_lambertian(&hit, &scene.lights, scene.ambient, |shadow, t_max| {
-            scene.is_occluded(shadow, t_max)
-        }),
+        Some(hit) => {
+            let local = shade_lambertian(&hit, &scene.lights, scene.ambient, |shadow, t_max| {
+                scene.is_occluded(shadow, t_max)
+            });
+
+            let k = hit.material.reflectivity;
+            if !opts.reflections || k <= 0.0 || depth >= opts.max_depth {
+                return local;
+            }
+
+            let reflected_dir = reflect(ray.direction, hit.normal);
+            // Bias along the normal so the bounce does not re-hit this surface.
+            let origin = hit.point + hit.normal * SHADOW_BIAS;
+            let bounce = Ray::new(origin, reflected_dir);
+            let reflected = trace_recursive(scene, &bounce, opts, depth + 1);
+            // Tint the mirror by albedo; blend with local diffuse.
+            local * (1.0 - k) + (reflected * hit.material.albedo) * k
+        }
         None => scene.background.color_for_ray(ray),
     }
 }
 
 /// Cast one camera ray through the center of pixel `(x, y)` and shade it.
-pub fn trace_pixel(scene: &Scene, camera: &Camera, x: u32, y: u32, width: u32, height: u32) -> Color {
+pub fn trace_pixel(
+    scene: &Scene,
+    camera: &Camera,
+    x: u32,
+    y: u32,
+    width: u32,
+    height: u32,
+) -> Color {
+    trace_pixel_with(scene, camera, x, y, width, height, &TraceOptions::default())
+}
+
+pub fn trace_pixel_with(
+    scene: &Scene,
+    camera: &Camera,
+    x: u32,
+    y: u32,
+    width: u32,
+    height: u32,
+    opts: &TraceOptions,
+) -> Color {
     let ray = camera.ray_through_pixel(x, y, width, height);
-    trace(scene, &ray)
+    trace_with(scene, &ray, opts)
 }
 
 /// Full primary-ray loop: row-major pixels, `y = 0` at the top (PPM order).
-///
-/// Returns `width * height` colors. PPM encoding is RT-010.
 pub fn render_frame(scene: &Scene, camera: &Camera, width: u32, height: u32) -> Vec<Color> {
+    render_frame_with(scene, camera, width, height, &TraceOptions::default())
+}
+
+pub fn render_frame_with(
+    scene: &Scene,
+    camera: &Camera,
+    width: u32,
+    height: u32,
+    opts: &TraceOptions,
+) -> Vec<Color> {
     let mut pixels = Vec::with_capacity((width as usize) * (height as usize));
     for y in 0..height {
         for x in 0..width {
-            pixels.push(trace_pixel(scene, camera, x, y, width, height));
+            pixels.push(trace_pixel_with(scene, camera, x, y, width, height, opts));
         }
     }
     pixels
@@ -91,7 +175,6 @@ mod tests {
         let zenith = sky.color_for_ray(&up);
         let horizon = sky.color_for_ray(&down);
 
-        // Zenith is bluer; horizon is whiter.
         assert!(zenith.b > zenith.r);
         assert!(horizon.r > zenith.r);
     }
@@ -153,13 +236,11 @@ mod tests {
         let pixels = render_frame(&scene, &cam, w, h);
         assert_eq!(pixels.len(), (w * h) as usize);
 
-        // Center pixel should hit the red sphere (shaded, so still reddish).
         let center = pixels[(h / 2 * w + w / 2) as usize];
         assert!(center.r > 0.1);
         assert!(center.r > center.g);
         assert!(center.r > center.b);
 
-        // Corner should miss → solid black background.
         assert_eq!(pixels[0], Color::BLACK);
     }
 
@@ -170,5 +251,43 @@ mod tests {
         let via_helper = trace_pixel(&scene, &cam, 3, 5, 8, 8);
         let ray = cam.ray_through_pixel(3, 5, 8, 8);
         assert_eq!(via_helper, trace(&scene, &ray));
+    }
+
+    #[test]
+    fn reflect_bounces_off_normal() {
+        let v = Vec3::new(1.0, -1.0, 0.0);
+        let n = Vec3::new(0.0, 1.0, 0.0);
+        let r = reflect(v, n).normalize();
+        let expected = Vec3::new(1.0, 1.0, 0.0).normalize();
+        assert!((r.dot(expected) - 1.0).abs() < 1e-9);
+    }
+
+    #[test]
+    fn metal_sphere_sees_sky_when_reflections_on() {
+        let mut scene = Scene::new().with_background(Background::Solid(Color::new(0.1, 0.4, 0.9)));
+        scene
+            .add(Object::Plane(Plane::ground(
+                -1.0,
+                Material::solid(Color::new(0.3, 0.3, 0.3)),
+            )))
+            .add(Object::Sphere(Sphere::new(
+                Vec3::new(0.0, 0.0, -3.0),
+                1.0,
+                Material::metal(Color::WHITE, 1.0),
+            )))
+            .add_light(Light::point(Vec3::new(2.0, 4.0, 1.0), Color::WHITE, 1.0));
+
+        let cam = Camera::look_at(
+            Vec3::new(0.0, 0.5, 2.0),
+            Vec3::new(0.0, 0.0, -3.0),
+            Vec3::new(0.0, 1.0, 0.0),
+            50.0,
+            1.0,
+        );
+        let ray = cam.get_ray(0.5, 0.55);
+        let off = trace_with(&scene, &ray, &TraceOptions::default());
+        let on = trace_with(&scene, &ray, &TraceOptions::with_reflections(4));
+        // With reflections, the metal picks up blue sky; without, stay diffuse-darker.
+        assert!(on.b > off.b);
     }
 }

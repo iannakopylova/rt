@@ -9,7 +9,7 @@ _Last updated: 2026-07-18_
 |--------|---------------|---------|
 | **Iana** | — | RT-018 bonus |
 | **Sofia** | — | RT-017 bonus |
-| **Andriana** | — (docs done) | bonus RT-016 |
+| **Andriana** | — (reflection done) | — |
 
 ---
 
@@ -17,7 +17,6 @@ _Last updated: 2026-07-18_
 
 | ID | Title | Priority | Epic | Assignee |
 |----|-------|----------|------|----------|
-| [RT-016](./RT-016-bonus-reflection.md) | Reflection (bonus) | P2 | bonus | @andriana |
 | [RT-017](./RT-017-bonus-refraction.md) | Refraction (bonus) | P2 | bonus | @sofia |
 | [RT-018](./RT-018-bonus-textures.md) | Textures (bonus) | P2 | bonus | @iana |
 
@@ -43,6 +42,7 @@ _Last updated: 2026-07-18_
 
 | ID | Title | Priority | Epic | Assignee |
 |----|-------|----------|------|----------|
+| [RT-016](./RT-016-bonus-reflection.md) | Reflection (bonus) | P2 | bonus | @andriana |
 | [RT-015](./RT-015-documentation.md) | Auditor documentation (markdown) | P1 | docs | @andriana |
 | [RT-014](./RT-014-scene-alt-camera.md) | Scene 4 — same scene, new camera | P1 | scenes | @andriana |
 | [RT-013](./RT-013-scene-all-objects.md) | Scene 3 — all four objects | P1 | scenes | @andriana |
