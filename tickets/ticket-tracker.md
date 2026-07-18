@@ -6,7 +6,7 @@
 
 # rt Ticket Tracker
 
-Last refreshed: 2026-07-17 (RT-014 Scene 4 done)
+Last refreshed: 2026-07-18 (RT-015 documentation done)
 
 > **Board vs tracker**: [BOARD.md](./BOARD.md) is the live sprint board (who is on what). This file is the full requirements-style tracker: every ticket, deps, acceptance summary, and coverage by epic.
 
@@ -40,9 +40,9 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 
 | Person | Active ticket | Next up |
 |--------|---------------|---------|
-| **Iana** | — (PPM done) | RT-018 bonus / help scenes |
-| **Sofia** | — (objects done) | RT-017 bonus after core |
-| **Andriana** | RT-015 | bonus RT-016 after docs |
+| **Iana** | — (PPM done) | RT-018 bonus |
+| **Sofia** | — (objects done) | RT-017 bonus |
+| **Andriana** | — (docs done) | bonus RT-016 |
 
 ---
 
@@ -136,7 +136,7 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 
 | ID | Status | Ticket | Size | Deps | Coverage | Assignee |
 |----|--------|--------|------|------|----------|----------|
-| RT-008 | 🟢 | **Lights, brightness & shadows**: configurable intensity; Lambertian; shadow rays; Scene 2 dimmer than Scene 1. | L | RT-009, RT-004–007 | D6 | @andriana |
+| RT-008 | ✅ | **Lights, brightness & shadows**: configurable intensity; Lambertian; shadow rays; Scene 2 dimmer than Scene 1. | L | RT-009, RT-004–007 | D6 | @andriana |
 | RT-010 | ✅ | **PPM (P3) output**: `P3` header + RGB body; `cargo run > out.ppm`; `--width` / `--height` / `--output`. | M | RT-009 | D7 | @iana |
 
 ---
@@ -160,7 +160,7 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 
 | ID | Status | Ticket | Size | Deps | Coverage | Assignee |
 |----|--------|--------|------|------|----------|----------|
-| RT-015 | 🟡 | **Auditor documentation**: features; examples (objects, brightness, camera); PPM/resolution; reproduce all 4 scenes. Outline can start anytime. | M | RT-010–014 (finalize) | D12 | @andriana |
+| RT-015 | ✅ | **Auditor documentation**: features; examples (objects, brightness, camera); PPM/resolution; reproduce all 4 scenes. See `docs/DOCUMENTATION.md`. | M | RT-010–014 (finalize) | D12 | @andriana |
 
 ---
 
@@ -197,13 +197,13 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 | D3 | Camera | RT-003 | ✅ |
 | D4 | Four primitives | RT-004 ✅, RT-005 ✅, RT-006 ✅, RT-007 ✅ | ✅ |
 | D5 | Tracer core / closest hit | RT-009 | ✅ |
-| D6 | Lights & shadows | RT-008 | 🟢 |
+| D6 | Lights & shadows | RT-008 | ✅ |
 | D7 | PPM output | RT-010 | ✅ |
 | D8 | Scene 1 | RT-011 | ✅ |
 | D9 | Scene 2 | RT-012 | ✅ |
 | D10 | Scene 3 | RT-013 | ✅ |
 | D11 | Scene 4 | RT-014 | ✅ |
-| D12 | Documentation | RT-015 | 🟡 |
+| D12 | Documentation | RT-015 | ✅ |
 | B1 | Reflection | RT-016 | ⬜ |
 | B2 | Refraction | RT-017 | ⬜ |
 | B3 | Textures | RT-018 | ⬜ |
@@ -212,9 +212,9 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 ## 6) Immediate Next Work Queue
 
-1. **Andriana** — auditor docs **RT-015**, then optional bonus **RT-016**.
-2. **Iana** — can start bonus **RT-018** or help polish docs.
-3. **Sofia** — objects complete; next is bonus **RT-017** after lighting.
+1. **Andriana** — optional bonus **RT-016** (reflection).
+2. **Iana** — optional bonus **RT-018** (textures).
+3. **Sofia** — optional bonus **RT-017** (refraction; after RT-016 recommended).
 
 ---
 
@@ -239,7 +239,7 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 | Phase | Tickets |
 |-------|---------|
-| 4–6 | RT-008 🟢, RT-011 ✅, RT-012 ✅, RT-013 ✅, RT-014 ✅, RT-015 🟡 |
+| 4–6 | RT-008 ✅, RT-011 ✅, RT-012 ✅, RT-013 ✅, RT-014 ✅, RT-015 ✅ |
 | 7 | RT-016 ⬜ |
 
 ---
@@ -248,9 +248,9 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 | Status | Count |
 |--------|-------|
-| ✅ Done | 13 |
-| 🟢 In Progress | 1 |
-| 🟡 To Do | 1 |
+| ✅ Done | 15 |
+| 🟢 In Progress | 0 |
+| 🟡 To Do | 0 |
 | ⬜ Backlog | 3 |
 | 🔵 In Review | 0 |
 

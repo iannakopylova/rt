@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | In Progress |
+| **Status** | Done |
 | **Assignee** | @andriana |
 | **Priority** | P1 |
 | **Epic** | rendering |

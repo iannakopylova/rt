@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | To Do |
+| **Status** | Done |
 | **Assignee** | @andriana |
 | **Priority** | P1 |
 | **Epic** | docs |
@@ -13,13 +13,13 @@ Create the required markdown documentation so an auditor can use the ray tracer 
 
 ## Acceptance criteria
 
-- [ ] File exists (e.g. `DOCUMENTATION.md` or `docs/RAYTRACER.md`)
-- [ ] Explains ray tracer features
-- [ ] Code examples: create sphere, cube, plane, cylinder
-- [ ] Code examples: change brightness
-- [ ] Code examples: change camera position and angle
-- [ ] How to render PPM and set resolution
-- [ ] How to reproduce all 4 audit images
+- [x] File exists (e.g. `DOCUMENTATION.md` or `docs/RAYTRACER.md`) → [`docs/DOCUMENTATION.md`](../docs/DOCUMENTATION.md)
+- [x] Explains ray tracer features
+- [x] Code examples: create sphere, cube, plane, cylinder
+- [x] Code examples: change brightness
+- [x] Code examples: change camera position and angle
+- [x] How to render PPM and set resolution
+- [x] How to reproduce all 4 audit images
 
 ## Dependencies
 
