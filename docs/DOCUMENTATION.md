@@ -12,6 +12,7 @@ Auditor-facing guide for the Rust ray tracer in this repository (`rt`). It cover
 | Scene | Object list + lights + ambient (`src/scene.rs`) |
 | Shading | Lambertian diffuse, point / directional lights, shadow rays (`src/light.rs`) |
 | Reflection (bonus) | `Material::metal` + `-r` / `--reflection` (`src/tracer.rs`, RT-016) |
+| Refraction (bonus) | `Material::glass` + `-R` / `--refraction` (Snell's law + Fresnel, RT-017) |
 | Output | ASCII **P3 PPM** (`src/ppm.rs`) |
 | CLI | `--scene`, `--width`, `--height`, `--output` (`src/main.rs`) |
 
@@ -161,6 +162,30 @@ Without `-r`, reflective materials shade as diffuse only (fast path for audit sc
 
 ---
 
+## Refraction (bonus RT-017)
+
+Mark a material as glass (IOR, e.g. `1.5`), then enable Snell's-law refraction with `-R`. Interfaces also pick up Fresnel reflection (and total internal reflection when needed):
+
+```rust
+use crate::material::Material;
+use crate::objects::Sphere;
+use crate::vec3::{Color, Vec3};
+
+let glass = Sphere::new(
+    Vec3::new(0.0, 0.0, -3.5),
+    1.0,
+    Material::glass(Color::WHITE, 1.5), // absolute IOR
+);
+```
+
+```bash
+cargo run --release -- -s refraction -R --max-depth 8 --width 800 --height 600 -o scenes/scene_refraction.ppm
+```
+
+Without `-R`, dielectric materials shade as diffuse only.
+
+---
+
 ## Changing the camera (position & angle)
 
 ```rust
@@ -202,12 +227,13 @@ cargo run --release -- --scene 1 --width 800 --height 600 > out.ppm
 
 | Flag | Short | Meaning |
 |------|-------|---------|
-| `--scene ID` | `-s` | `1`/`sphere`, `2`/`cube`, `3`/`all`, `4`/`alt`, `5`/`reflection` |
+| `--scene ID` | `-s` | `1`/`sphere`, `2`/`cube`, `3`/`all`, `4`/`alt`, `5`/`reflection`, `6`/`refraction` |
 | `--width N` | `-w` | Image width (pixels) |
 | `--height N` | | Image height (pixels) |
 | `--output PATH` | `-o` | Output file (omit → stdout) |
 | `--reflection` | `-r` | Enable recursive reflections (RT-016) |
-| `--max-depth N` | | Max bounce depth when `-r` is set (default 5) |
+| `--refraction` | `-R` | Enable dielectric refraction (RT-017) |
+| `--max-depth N` | | Max bounce depth for `-r` / `-R` (default 5) |
 | `--help` | | Usage |
 
 ### From code

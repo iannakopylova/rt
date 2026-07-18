@@ -6,7 +6,7 @@
 
 # rt Ticket Tracker
 
-Last refreshed: 2026-07-18 (RT-016 reflection done)
+Last refreshed: 2026-07-18 (RT-017 refraction done)
 
 > **Board vs tracker**: [BOARD.md](./BOARD.md) is the live sprint board (who is on what). This file is the full requirements-style tracker: every ticket, deps, acceptance summary, and coverage by epic.
 
@@ -41,7 +41,7 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 | Person | Active ticket | Next up |
 |--------|---------------|---------|
 | **Iana** | — (PPM done) | RT-018 bonus |
-| **Sofia** | — (objects done) | RT-017 bonus |
+| **Sofia** | — (objects + refraction done) | — |
 | **Andriana** | — (docs + reflection done) | — |
 
 ---
@@ -171,7 +171,7 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 | ID | Status | Ticket | Size | Deps | Coverage | Assignee |
 |----|--------|--------|------|------|----------|----------|
 | RT-016 | ✅ | **Reflection**: reflective materials; max bounce depth; CLI flag (e.g. `-r`). | M | RT-008, RT-009 | B1 | @andriana |
-| RT-017 | ⬜ | **Refraction**: Snell's law / glass; CLI flag; demo object. | L | RT-009, RT-016 (recommended) | B2 | @sofia |
+| RT-017 | ✅ | **Refraction**: Snell's law / glass; CLI flag; demo object. | L | RT-009, RT-016 (recommended) | B2 | @sofia |
 | RT-018 | ⬜ | **Textures**: UV sample albedo; CLI flag (e.g. `-t`); document paths/formats. | M | RT-004–007, RT-009 | B3 | @iana |
 
 ---
@@ -205,15 +205,14 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 | D11 | Scene 4 | RT-014 | ✅ |
 | D12 | Documentation | RT-015 | ✅ |
 | B1 | Reflection | RT-016 | ✅ |
-| B2 | Refraction | RT-017 | ⬜ |
+| B2 | Refraction | RT-017 | ✅ |
 | B3 | Textures | RT-018 | ⬜ |
 
 ---
 
 ## 6) Immediate Next Work Queue
 
-1. **Sofia** — optional bonus **RT-017** (refraction).
-2. **Iana** — optional bonus **RT-018** (textures).
+1. **Iana** — optional bonus **RT-018** (textures).
 
 ---
 
@@ -232,7 +231,7 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 | Phase | Tickets |
 |-------|---------|
 | 2 | RT-003 ✅, RT-004 ✅, RT-005 ✅, RT-006 ✅, RT-007 ✅ |
-| 7 | RT-017 ⬜ |
+| 7 | RT-017 ✅ |
 
 ### Andriana — 7 tickets
 
@@ -247,10 +246,10 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 | Status | Count |
 |--------|-------|
-| ✅ Done | 16 |
+| ✅ Done | 17 |
 | 🟢 In Progress | 0 |
 | 🟡 To Do | 0 |
-| ⬜ Backlog | 2 |
+| ⬜ Backlog | 1 |
 | 🔵 In Review | 0 |
 
 | Priority | Count |

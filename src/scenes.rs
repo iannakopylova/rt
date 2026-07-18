@@ -216,6 +216,51 @@ pub fn scene_reflection_demo(aspect: f64) -> (Scene, Camera) {
     (scene, camera)
 }
 
+/// Bonus RT-017 demo: glass sphere in front of a colored cube.
+///
+/// Enable Snell's-law refraction with `--refraction` when rendering.
+pub fn scene_refraction_demo(aspect: f64) -> (Scene, Camera) {
+    // --- configurable ---
+    let ground_y = -1.0;
+    let glass_center = Vec3::new(-0.4, 0.0, -3.5);
+    let glass_radius = 1.0;
+    let cube_center = Vec3::new(1.5, 0.0, -5.0);
+    let cube_edge = 1.6;
+    let light_pos = Vec3::new(2.5, 6.0, 2.0);
+    let eye = Vec3::new(0.0, 1.4, 3.2);
+    let look_at = Vec3::new(0.2, 0.0, -4.0);
+    let vfov_degrees = 48.0;
+    // --------------------
+
+    let mut scene = Scene::new().with_ambient(0.06);
+    scene
+        .add(Object::Plane(Plane::ground(
+            ground_y,
+            Material::solid(Color::new(0.4, 0.42, 0.48)),
+        )))
+        .add(Object::Sphere(Sphere::new(
+            glass_center,
+            glass_radius,
+            Material::glass(Color::new(0.95, 0.97, 1.0), 1.5),
+        )))
+        .add(Object::Cube(Cube::with_albedo(
+            cube_center,
+            cube_edge,
+            Color::new(0.9, 0.25, 0.15),
+        )))
+        .add_light(Light::scene1_key(light_pos));
+
+    let camera = Camera::look_at(
+        eye,
+        look_at,
+        Vec3::new(0.0, 1.0, 0.0),
+        vfov_degrees,
+        aspect,
+    );
+
+    (scene, camera)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

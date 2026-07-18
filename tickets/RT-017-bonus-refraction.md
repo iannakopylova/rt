@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | Backlog |
+| **Status** | Done |
 | **Assignee** | @sofia |
 | **Priority** | P2 |
 | **Epic** | bonus |
@@ -13,10 +13,10 @@ Add transparent/refractive materials (glass) using Snell's law.
 
 ## Acceptance criteria
 
-- [ ] Refractive index on material
-- [ ] Refraction + optional reflection at interfaces
-- [ ] Behind CLI flag (e.g. `--refraction`)
-- [ ] Demo object (e.g. glass sphere) in a test scene
+- [x] Refractive index on material → `Material::glass` / `ior`
+- [x] Refraction + optional reflection at interfaces → Snell's law + Schlick Fresnel (+ TIR)
+- [x] Behind CLI flag → `-R` / `--refraction`
+- [x] Demo object (glass sphere) → `scenes/scene_refraction.ppm` / `--scene refraction -R`
 
 ## Dependencies
 

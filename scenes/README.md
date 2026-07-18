@@ -44,4 +44,12 @@ Metal sphere + red cube. Requires `-r` to see mirrors.
 cargo run --release -- -s reflection -r --width 800 --height 600 -o scenes/scene_reflection.ppm
 ```
 
-Knobs: `src/scenes.rs` (`scene3_world`, `scene3_camera_front`, `scene3_camera_alt`, `scene_reflection_demo`).
+## Refraction demo (RT-017)
+
+Glass sphere + red cube behind it. Requires `-R` / `--refraction`.
+
+```powershell
+cargo run --release -- -s refraction -R --width 800 --height 600 -o scenes/scene_refraction.ppm
+```
+
+Knobs: `src/scenes.rs` (`scene3_world`, `scene3_camera_front`, `scene3_camera_alt`, `scene_reflection_demo`, `scene_refraction_demo`).

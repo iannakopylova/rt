@@ -1,5 +1,6 @@
 //! Ray tracer core loop (RT-009): closest hit, background, per-pixel render.
 //! RT-016: optional recursive reflections behind [`TraceOptions`].
+//! RT-017: optional dielectric refraction (Snell's law + Fresnel).
 
 use crate::camera::Camera;
 use crate::light::{shade_lambertian, SHADOW_BIAS};
@@ -7,11 +8,12 @@ use crate::ray::Ray;
 use crate::scene::Scene;
 use crate::vec3::{Color, Vec3};
 
-/// Controls recursive reflection (RT-016). When `reflections` is false, all
+/// Controls recursive reflection / refraction. When both flags are false, all
 /// materials shade as diffuse only (fast path for audit scenes).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TraceOptions {
     pub reflections: bool,
+    pub refractions: bool,
     pub max_depth: u32,
 }
 
@@ -19,6 +21,7 @@ impl Default for TraceOptions {
     fn default() -> Self {
         Self {
             reflections: false,
+            refractions: false,
             max_depth: 5,
         }
     }
@@ -28,6 +31,23 @@ impl TraceOptions {
     pub fn with_reflections(max_depth: u32) -> Self {
         Self {
             reflections: true,
+            refractions: false,
+            max_depth: max_depth.max(1),
+        }
+    }
+
+    pub fn with_refractions(max_depth: u32) -> Self {
+        Self {
+            reflections: false,
+            refractions: true,
+            max_depth: max_depth.max(1),
+        }
+    }
+
+    pub fn with_bounces(reflections: bool, refractions: bool, max_depth: u32) -> Self {
+        Self {
+            reflections,
+            refractions,
             max_depth: max_depth.max(1),
         }
     }
@@ -40,7 +60,27 @@ pub fn reflect(v: Vec3, normal: Vec3) -> Vec3 {
     dir - n * (2.0 * dir.dot(n))
 }
 
-/// Trace a ray: background on miss, Lambertian (+ optional reflection) on hit.
+/// Snell's law. `uv` is the unit incident direction, `n` the unit shading normal
+/// (facing against the incident ray). `etai_over_etat` is ηᵢ/ηₜ.
+/// Returns `None` on total internal reflection.
+pub fn refract(uv: Vec3, n: Vec3, etai_over_etat: f64) -> Option<Vec3> {
+    let cos_theta = (-uv).dot(n).min(1.0);
+    let r_out_perp = (uv + n * cos_theta) * etai_over_etat;
+    let k = 1.0 - r_out_perp.length_squared();
+    if k < 0.0 {
+        None
+    } else {
+        Some(r_out_perp + n * (-k.sqrt()))
+    }
+}
+
+/// Schlick approximation for dielectric reflectance at a given cosine and ηᵢ/ηₜ.
+pub fn schlick(cosine: f64, etai_over_etat: f64) -> f64 {
+    let r0 = ((1.0 - etai_over_etat) / (1.0 + etai_over_etat)).powi(2);
+    r0 + (1.0 - r0) * (1.0 - cosine).powi(5)
+}
+
+/// Trace a ray: background on miss, Lambertian (+ optional bounce) on hit.
 pub fn trace(scene: &Scene, ray: &Ray) -> Color {
     trace_with(scene, ray, &TraceOptions::default())
 }
@@ -56,8 +96,55 @@ fn trace_recursive(scene: &Scene, ray: &Ray, opts: &TraceOptions, depth: u32) ->
                 scene.is_occluded(shadow, t_max)
             });
 
+            if depth >= opts.max_depth {
+                return local;
+            }
+
+            // Dielectric path (RT-017): refraction + Fresnel reflection at the interface.
+            if opts.refractions && hit.material.is_dielectric() {
+                let ior = hit.material.ior;
+                let etai_over_etat = if hit.front_face { 1.0 / ior } else { ior };
+                let unit_dir = ray.direction.normalize();
+                let cos_theta = (-unit_dir).dot(hit.normal).min(1.0);
+                let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
+                let cannot_refract = etai_over_etat * sin_theta > 1.0;
+                let reflectance = if cannot_refract {
+                    1.0
+                } else {
+                    schlick(cos_theta, etai_over_etat)
+                };
+
+                let reflected_dir = reflect(unit_dir, hit.normal);
+                let reflect_origin = hit.point + hit.normal * SHADOW_BIAS;
+                let reflected = trace_recursive(
+                    scene,
+                    &Ray::new(reflect_origin, reflected_dir),
+                    opts,
+                    depth + 1,
+                );
+
+                let transmitted = if cannot_refract {
+                    Color::BLACK
+                } else if let Some(refracted_dir) = refract(unit_dir, hit.normal, etai_over_etat)
+                {
+                    let refract_origin = hit.point - hit.normal * SHADOW_BIAS;
+                    trace_recursive(
+                        scene,
+                        &Ray::new(refract_origin, refracted_dir),
+                        opts,
+                        depth + 1,
+                    )
+                } else {
+                    Color::BLACK
+                };
+
+                // Tint by albedo; Fresnel blends reflection vs transmission.
+                return (reflected * reflectance + transmitted * (1.0 - reflectance))
+                    * hit.material.albedo;
+            }
+
             let k = hit.material.reflectivity;
-            if !opts.reflections || k <= 0.0 || depth >= opts.max_depth {
+            if !opts.reflections || k <= 0.0 {
                 return local;
             }
 
@@ -263,6 +350,27 @@ mod tests {
     }
 
     #[test]
+    fn refract_air_to_glass_bends_toward_normal() {
+        // Incident from air into glass along a 45° path toward −Y on a +Y normal.
+        let uv = Vec3::new(1.0, -1.0, 0.0).normalize();
+        let n = Vec3::new(0.0, 1.0, 0.0);
+        let eta = 1.0 / 1.5;
+        let t = refract(uv, n, eta).unwrap().normalize();
+        // Refracted ray should still go downward, but closer to the −normal (−Y).
+        assert!(t.y < 0.0);
+        assert!(t.y.abs() > uv.y.abs());
+        assert!(t.x.abs() < uv.x.abs());
+    }
+
+    #[test]
+    fn refract_total_internal_reflection_returns_none() {
+        // Inside glass, grazing exit toward air (ηᵢ/ηₜ = 1.5): TIR.
+        let uv = Vec3::new(0.95, 0.312249899, 0.0).normalize();
+        let n = Vec3::new(0.0, -1.0, 0.0);
+        assert!(refract(uv, n, 1.5).is_none());
+    }
+
+    #[test]
     fn metal_sphere_sees_sky_when_reflections_on() {
         let mut scene = Scene::new().with_background(Background::Solid(Color::new(0.1, 0.4, 0.9)));
         scene
@@ -289,5 +397,42 @@ mod tests {
         let on = trace_with(&scene, &ray, &TraceOptions::with_reflections(4));
         // With reflections, the metal picks up blue sky; without, stay diffuse-darker.
         assert!(on.b > off.b);
+    }
+
+    #[test]
+    fn glass_sphere_sees_colored_backdrop_when_refraction_on() {
+        let mut scene = Scene::new().with_background(Background::Solid(Color::new(0.05, 0.05, 0.08)));
+        scene
+            .add(Object::Plane(Plane::ground(
+                -1.0,
+                Material::solid(Color::new(0.2, 0.2, 0.25)),
+            )))
+            // Bright red wall behind the glass so transmission is obvious.
+            .add(Object::Plane(Plane::from_point_normal(
+                Vec3::new(0.0, 0.0, -6.0),
+                Vec3::new(0.0, 0.0, 1.0),
+                Material::solid(Color::new(0.95, 0.15, 0.1)),
+            )))
+            .add(Object::Sphere(Sphere::new(
+                Vec3::new(0.0, 0.0, -3.0),
+                1.0,
+                Material::glass(Color::WHITE, 1.5),
+            )))
+            .add_light(Light::point(Vec3::new(2.0, 5.0, 2.0), Color::WHITE, 1.2));
+
+        let cam = Camera::look_at(
+            Vec3::new(0.0, 0.3, 2.5),
+            Vec3::new(0.0, 0.0, -3.0),
+            Vec3::new(0.0, 1.0, 0.0),
+            45.0,
+            1.0,
+        );
+        let ray = cam.get_ray(0.5, 0.5);
+        let off = trace_with(&scene, &ray, &TraceOptions::default());
+        let on = trace_with(&scene, &ray, &TraceOptions::with_refractions(8));
+        // With refraction, the glass transmits the red wall; without, diffuse only.
+        assert!(on.r > off.r);
+        assert!(on.r > on.g);
+        assert!(on.r > on.b);
     }
 }

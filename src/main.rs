@@ -33,6 +33,8 @@ enum SceneId {
     Scene4,
     /// RT-016 — metal sphere demo (use with `--reflection`).
     Reflection,
+    /// RT-017 — glass sphere demo (use with `--refraction`).
+    Refraction,
 }
 
 struct Args {
@@ -42,6 +44,7 @@ struct Args {
     /// If set, write to this path; otherwise write PPM to stdout.
     output: Option<String>,
     reflections: bool,
+    refractions: bool,
     max_depth: u32,
 }
 
@@ -51,6 +54,7 @@ fn parse_args(argv: &[String]) -> Result<Args, String> {
     let mut scene = SceneId::Scene1;
     let mut output = None;
     let mut reflections = false;
+    let mut refractions = false;
     let mut max_depth = DEFAULT_MAX_DEPTH;
 
     let mut i = 1;
@@ -78,6 +82,9 @@ fn parse_args(argv: &[String]) -> Result<Args, String> {
             "--reflection" | "-r" => {
                 reflections = true;
             }
+            "--refraction" | "-R" => {
+                refractions = true;
+            }
             "--max-depth" => {
                 i += 1;
                 max_depth = parse_dim(argv.get(i), "--max-depth")?;
@@ -97,6 +104,7 @@ fn parse_args(argv: &[String]) -> Result<Args, String> {
         scene,
         output,
         reflections,
+        refractions,
         max_depth,
     })
 }
@@ -120,15 +128,16 @@ fn parse_scene(value: Option<&String>) -> Result<SceneId, String> {
         "3" | "scene3" | "all" => Ok(SceneId::Scene3),
         "4" | "scene4" | "alt" | "alt-camera" => Ok(SceneId::Scene4),
         "5" | "reflection" | "metal" => Ok(SceneId::Reflection),
+        "6" | "refraction" | "glass" => Ok(SceneId::Refraction),
         other => Err(format!(
-            "unknown scene '{other}' (try: 1 / sphere, 2 / cube, 3 / all, 4 / alt, 5 / reflection)"
+            "unknown scene '{other}' (try: 1 / sphere, 2 / cube, 3 / all, 4 / alt, 5 / reflection, 6 / refraction)"
         )),
     }
 }
 
 fn print_usage() {
     eprintln!(
-        "Usage: rt [--scene ID] [--width N] [--height N] [--output FILE] [-r] [--max-depth N]\n\
+        "Usage: rt [--scene ID] [--width N] [--height N] [--output FILE] [-r] [-R] [--max-depth N]\n\
          \n\
          Scenes:\n\
            1 | sphere       Scene 1 — sphere only (RT-011)\n\
@@ -136,15 +145,18 @@ fn print_usage() {
            3 | all          Scene 3 — all four objects (RT-013)\n\
            4 | alt          Scene 4 — same as 3, alternate camera (RT-014)\n\
            5 | reflection   Bonus metal-sphere demo (RT-016; use with -r)\n\
+           6 | refraction   Bonus glass-sphere demo (RT-017; use with -R)\n\
          \n\
          Bonus:\n\
            -r | --reflection   Enable recursive reflections\n\
-           --max-depth N       Max bounce depth when -r is set (default {DEFAULT_MAX_DEPTH})\n\
+           -R | --refraction   Enable dielectric refraction (Snell's law)\n\
+           --max-depth N       Max bounce depth for -r / -R (default {DEFAULT_MAX_DEPTH})\n\
          \n\
          Defaults: scene 1, {DEFAULT_WIDTH}×{DEFAULT_HEIGHT} (dev). Audit size: 800×600.\n\
          Examples:\n\
            cargo run -- --scene 3 --width 800 --height 600 -o scenes/scene3_all.ppm\n\
            cargo run --release -- -s reflection -r --width 800 --height 600 -o scenes/scene_reflection.ppm\n\
+           cargo run --release -- -s refraction -R --width 800 --height 600 -o scenes/scene_refraction.ppm\n\
          Without --output, writes a P3 PPM to stdout."
     );
 }
@@ -167,6 +179,7 @@ fn main() {
         SceneId::Scene3 => scenes::scene3_all(aspect),
         SceneId::Scene4 => scenes::scene4_alt_camera(aspect),
         SceneId::Reflection => scenes::scene_reflection_demo(aspect),
+        SceneId::Refraction => scenes::scene_refraction_demo(aspect),
     };
 
     let scene_label = match args.scene {
@@ -175,19 +188,17 @@ fn main() {
         SceneId::Scene3 => "scene3_all",
         SceneId::Scene4 => "scene4_alt_camera",
         SceneId::Reflection => "scene_reflection",
+        SceneId::Refraction => "scene_refraction",
     };
 
-    let opts = if args.reflections {
-        TraceOptions::with_reflections(args.max_depth)
-    } else {
-        TraceOptions::default()
-    };
+    let opts = TraceOptions::with_bounces(args.reflections, args.refractions, args.max_depth);
 
     eprintln!(
-        "rt: {scene_label} {}×{} reflections={} depth={} → {}",
+        "rt: {scene_label} {}×{} reflections={} refractions={} depth={} → {}",
         args.width,
         args.height,
         opts.reflections,
+        opts.refractions,
         opts.max_depth,
         args.output.as_deref().unwrap_or("stdout")
     );
@@ -237,6 +248,7 @@ mod arg_tests {
         assert_eq!(args.scene, SceneId::Scene1);
         assert!(args.output.is_none());
         assert!(!args.reflections);
+        assert!(!args.refractions);
     }
 
     #[test]
@@ -291,6 +303,12 @@ mod arg_tests {
                 .scene,
             SceneId::Reflection
         );
+        assert_eq!(
+            parse_args(&["rt".into(), "-s".into(), "glass".into()])
+                .unwrap()
+                .scene,
+            SceneId::Refraction
+        );
     }
 
     #[test]
@@ -305,7 +323,25 @@ mod arg_tests {
         ])
         .unwrap();
         assert!(args.reflections);
+        assert!(!args.refractions);
         assert_eq!(args.max_depth, 8);
         assert_eq!(args.scene, SceneId::Reflection);
+    }
+
+    #[test]
+    fn refraction_flags() {
+        let args = parse_args(&[
+            "rt".into(),
+            "--refraction".into(),
+            "-s".into(),
+            "6".into(),
+            "--max-depth".into(),
+            "10".into(),
+        ])
+        .unwrap();
+        assert!(args.refractions);
+        assert!(!args.reflections);
+        assert_eq!(args.max_depth, 10);
+        assert_eq!(args.scene, SceneId::Refraction);
     }
 }
