@@ -54,9 +54,10 @@ Push to GitHub only; Gitea (Zone01) mirrors automatically — see [`docs/GITHUB_
 
 ## Authors
 
-- [Author Name 1]
-- [Author Name 2]
-- [Author Name 3]
+- 🗂️ Iana Kopylova - [ikopylov](https://discordapp.com/users/1279339146833297509)
+- 👩‍💻 Sofia Busho - [sbusho](https://discordapp.com/users/1276592724979613697)
+- ✍️ Adriana Stas - [astas](https://discordapp.com/users/780150798927134740)
+
 
 ## License
 
