@@ -63,6 +63,17 @@ impl Cylinder {
     pub fn y_max(self) -> f64 {
         self.base.y + self.height
     }
+
+    /// `u` = angle around the `+Y` axis / 2π, `v` = height fraction along the axis
+    /// (RT-018). Applied to side-wall and cap hits alike — caps land at `v = 0` / `1`.
+    fn uv_at(self, point: Vec3) -> (f64, f64) {
+        use std::f64::consts::PI;
+        let dx = point.x - self.base.x;
+        let dz = point.z - self.base.z;
+        let u = (dz.atan2(dx) / (2.0 * PI)).rem_euclid(1.0);
+        let v = ((point.y - self.base.y) / self.height).clamp(0.0, 1.0);
+        (u, v)
+    }
 }
 
 impl Hittable for Cylinder {
@@ -89,6 +100,7 @@ impl Hittable for Cylinder {
             outward,
             ray,
             self.material,
+            self.uv_at(point),
         ))
     }
 }
@@ -182,6 +194,41 @@ mod tests {
         assert!(approx(hit.point.z, -4.0));
         assert!(approx(hit.normal.z, 1.0));
         assert!(hit.front_face);
+    }
+
+    #[test]
+    fn uv_side_wall_angle_and_height() {
+        // base=(0,-1,-5): front wall hit dz=1,dx=0 -> angle=pi/2 -> u=0.25; mid-height -> v=0.5.
+        let cyl = unit_cyl();
+        let ray = Ray::new(Vec3::ZERO, Vec3::new(0.0, 0.0, -1.0));
+        let hit = cyl.hit(&ray, 0.001, f64::INFINITY).unwrap();
+        assert!(approx(hit.uv.0, 0.25));
+        assert!(approx(hit.uv.1, 0.5));
+    }
+
+    #[test]
+    fn uv_caps_land_at_v_zero_or_one() {
+        // Mid at y=-2 -> base.y=-3, top at y=-1: top cap should read v=1.
+        let top_cyl = Cylinder::with_albedo(Vec3::new(0.0, -2.0, -5.0), 1.0, 2.0, Color::WHITE);
+        let top_hit = top_cyl
+            .hit(
+                &Ray::new(Vec3::new(0.0, 0.0, -5.0), Vec3::new(0.0, -1.0, 0.0)),
+                0.001,
+                f64::INFINITY,
+            )
+            .unwrap();
+        assert!(approx(top_hit.uv.1, 1.0));
+
+        // Mid at y=2 -> base.y=1: bottom cap (y=1) should read v=0.
+        let bottom_cyl = Cylinder::with_albedo(Vec3::new(0.0, 2.0, -5.0), 1.0, 2.0, Color::WHITE);
+        let bottom_hit = bottom_cyl
+            .hit(
+                &Ray::new(Vec3::new(0.0, 0.0, -5.0), Vec3::new(0.0, 1.0, 0.0)),
+                0.001,
+                f64::INFINITY,
+            )
+            .unwrap();
+        assert!(approx(bottom_hit.uv.1, 0.0));
     }
 
     #[test]

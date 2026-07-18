@@ -113,16 +113,18 @@ pub fn scene3_world() -> Scene {
             sphere_radius,
             Color::new(0.9, 0.25, 0.2),
         )))
-        .add(Object::Cube(Cube::with_albedo(
+        .add(Object::Cube(Cube::from_center_extent(
             cube_center,
             cube_edge,
-            Color::new(0.25, 0.45, 0.9),
+            // RT-018: textured when `-t` is set; identical solid albedo otherwise,
+            // so Scene 3 / Scene 4 stay byte-for-byte unchanged without the flag.
+            Material::solid(Color::new(0.25, 0.45, 0.9)).with_texture("textures/stripes_cube.ppm"),
         )))
-        .add(Object::Cylinder(Cylinder::with_albedo(
+        .add(Object::Cylinder(Cylinder::from_midpoint(
             cylinder_mid,
             cylinder_radius,
             cylinder_height,
-            Color::new(0.2, 0.75, 0.35),
+            Material::solid(Color::new(0.2, 0.75, 0.35)).with_texture("textures/bands_cylinder.ppm"),
         )))
         .add_light(Light::scene1_key(light_pos));
 
@@ -247,6 +249,133 @@ pub fn scene_refraction_demo(aspect: f64) -> (Scene, Camera) {
             cube_center,
             cube_edge,
             Color::new(0.9, 0.25, 0.15),
+        )))
+        .add_light(Light::scene1_key(light_pos));
+
+    let camera = Camera::look_at(
+        eye,
+        look_at,
+        Vec3::new(0.0, 1.0, 0.0),
+        vfov_degrees,
+        aspect,
+    );
+
+    (scene, camera)
+}
+
+/// Bonus RT-018 demo: single textured sphere over a solid ground plane.
+///
+/// Enable texture sampling with `--textures` when rendering; without it the
+/// sphere falls back to its solid albedo (same framing as [`scene1_sphere`]).
+pub fn scene_texture_sphere_demo(aspect: f64) -> (Scene, Camera) {
+    // --- configurable ---
+    let ground_y = -1.0;
+    let sphere_center = Vec3::new(0.0, 0.0, -4.0);
+    let sphere_radius = 1.0;
+    let light_pos = Vec3::new(3.0, 5.0, 1.0);
+    let eye = Vec3::new(0.0, 1.2, 3.0);
+    let look_at = Vec3::new(0.0, 0.0, -4.0);
+    let vfov_degrees = 50.0;
+    // --------------------
+
+    let mut scene = Scene::new().with_ambient(0.08);
+    scene
+        .add(Object::Plane(Plane::ground(
+            ground_y,
+            Material::solid(Color::new(0.55, 0.55, 0.58)),
+        )))
+        .add(Object::Sphere(Sphere::new(
+            sphere_center,
+            sphere_radius,
+            Material::textured(Color::new(0.9, 0.25, 0.2), "textures/checker_red.ppm"),
+        )))
+        .add_light(Light::scene1_key(light_pos));
+
+    let camera = Camera::look_at(
+        eye,
+        look_at,
+        Vec3::new(0.0, 1.0, 0.0),
+        vfov_degrees,
+        aspect,
+    );
+
+    (scene, camera)
+}
+
+/// Bonus RT-018 demo: textured ground plane with a solid sphere for scale and shadow.
+pub fn scene_texture_plane_demo(aspect: f64) -> (Scene, Camera) {
+    // --- configurable ---
+    let ground_y = -1.0;
+    let tile_size = 2.0;
+    let sphere_center = Vec3::new(0.0, 0.0, -4.0);
+    let sphere_radius = 0.9;
+    let light_pos = Vec3::new(3.0, 5.0, 1.0);
+    let eye = Vec3::new(0.0, 1.4, 3.4);
+    let look_at = Vec3::new(0.0, 0.0, -4.0);
+    let vfov_degrees = 55.0;
+    // --------------------
+
+    let mut scene = Scene::new().with_ambient(0.08);
+    scene
+        .add(Object::Plane(
+            Plane::from_point_normal(
+                Vec3::new(0.0, ground_y, 0.0),
+                Vec3::new(0.0, 1.0, 0.0),
+                Material::textured(Color::new(0.55, 0.55, 0.58), "textures/tile_floor.ppm"),
+            )
+            .with_tile_size(tile_size),
+        ))
+        .add(Object::Sphere(Sphere::with_albedo(
+            sphere_center,
+            sphere_radius,
+            Color::new(0.85, 0.85, 0.9),
+        )))
+        .add_light(Light::scene1_key(light_pos));
+
+    let camera = Camera::look_at(
+        eye,
+        look_at,
+        Vec3::new(0.0, 1.0, 0.0),
+        vfov_degrees,
+        aspect,
+    );
+
+    (scene, camera)
+}
+
+/// Bonus RT-018 + RT-016 interplay demo: a sphere that is **both** textured and a
+/// mirror, so a reflected bounce must show the sampled texture color at the
+/// reflection's own hit point (not the base albedo, and not a flat/default color).
+/// Needs both `--reflection` and `--textures` to see the full effect.
+pub fn scene_texture_reflection_demo(aspect: f64) -> (Scene, Camera) {
+    // --- configurable ---
+    let ground_y = -1.0;
+    let metal_center = Vec3::new(-0.8, 0.0, -4.0);
+    let metal_radius = 1.0;
+    let cube_center = Vec3::new(1.4, 0.0, -3.5);
+    let cube_edge = 1.2;
+    let light_pos = Vec3::new(3.0, 6.0, 2.0);
+    let eye = Vec3::new(0.0, 1.8, 3.5);
+    let look_at = Vec3::new(0.0, 0.0, -4.0);
+    let vfov_degrees = 50.0;
+    // --------------------
+
+    let mut scene = Scene::new().with_ambient(0.06);
+    scene
+        .add(Object::Plane(Plane::ground(
+            ground_y,
+            Material::solid(Color::new(0.45, 0.45, 0.5)),
+        )))
+        .add(Object::Sphere(Sphere::new(
+            metal_center,
+            metal_radius,
+            Material::metal(Color::new(0.95, 0.95, 0.98), 0.92)
+                .with_texture("textures/checker_blue.ppm"),
+        )))
+        .add(Object::Cube(Cube::with_albedo(
+            cube_center,
+            cube_edge,
+            Color::new(0.85, 0.25, 0.2),
         )))
         .add_light(Light::scene1_key(light_pos));
 
@@ -406,5 +535,85 @@ mod tests {
         let (_, c4) = scene4_alt_camera(aspect);
         assert_ne!(c3.eye(), c4.eye());
         assert_ne!(c3.get_ray(0.5, 0.5).direction, c4.get_ray(0.5, 0.5).direction);
+    }
+
+    // --- RT-018 textures -----------------------------------------------
+
+    #[test]
+    fn scene3_cube_and_cylinder_are_textured_with_unchanged_albedo() {
+        // Same albedo as before RT-018 so a `-t`-off render stays byte-identical;
+        // only `texture_path` is new.
+        let scene = scene3_world();
+        for object in &scene.objects {
+            match object {
+                Object::Cube(c) => {
+                    assert!(c.material.texture_path.is_some());
+                    assert_eq!(c.material.albedo, Color::new(0.25, 0.45, 0.9));
+                }
+                Object::Cylinder(cyl) => {
+                    assert!(cyl.material.texture_path.is_some());
+                    assert_eq!(cyl.material.albedo, Color::new(0.2, 0.75, 0.35));
+                }
+                Object::Sphere(s) => assert!(s.material.texture_path.is_none()),
+                Object::Plane(p) => assert!(p.material.texture_path.is_none()),
+            }
+        }
+    }
+
+    #[test]
+    fn texture_sphere_demo_sphere_is_textured() {
+        let (scene, _) = scene_texture_sphere_demo(4.0 / 3.0);
+        assert_eq!(scene.objects.len(), 2);
+        let sphere = scene
+            .objects
+            .iter()
+            .find_map(|o| match o {
+                Object::Sphere(s) => Some(s),
+                _ => None,
+            })
+            .expect("scene should contain a sphere");
+        assert!(sphere.material.texture_path.is_some());
+    }
+
+    #[test]
+    fn texture_plane_demo_plane_textured_sphere_solid() {
+        let (scene, _) = scene_texture_plane_demo(4.0 / 3.0);
+        for object in &scene.objects {
+            match object {
+                Object::Plane(p) => assert!(p.material.texture_path.is_some()),
+                Object::Sphere(s) => assert!(s.material.texture_path.is_none()),
+                _ => {}
+            }
+        }
+    }
+
+    #[test]
+    fn texture_reflection_demo_sphere_is_textured_and_metal() {
+        let (scene, _) = scene_texture_reflection_demo(4.0 / 3.0);
+        let sphere = scene
+            .objects
+            .iter()
+            .find_map(|o| match o {
+                Object::Sphere(s) => Some(s),
+                _ => None,
+            })
+            .expect("scene should contain a sphere");
+        assert!(sphere.material.texture_path.is_some());
+        assert!(sphere.material.reflectivity > 0.0);
+    }
+
+    #[test]
+    fn texture_demo_center_rays_hit_something() {
+        // Smoke test: each new demo scene actually has a subject in frame.
+        for aspect in [4.0 / 3.0] {
+            let (scene, cam) = scene_texture_sphere_demo(aspect);
+            assert!(scene.hit(&cam.get_ray(0.5, 0.5), 0.001, f64::INFINITY).is_some());
+
+            let (scene, cam) = scene_texture_plane_demo(aspect);
+            assert!(scene.hit(&cam.get_ray(0.5, 0.15), 0.001, f64::INFINITY).is_some());
+
+            let (scene, cam) = scene_texture_reflection_demo(aspect);
+            assert!(scene.hit(&cam.get_ray(0.5, 0.5), 0.001, f64::INFINITY).is_some());
+        }
     }
 }

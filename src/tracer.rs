@@ -6,6 +6,7 @@ use crate::camera::Camera;
 use crate::light::{shade_lambertian, SHADOW_BIAS};
 use crate::ray::Ray;
 use crate::scene::Scene;
+use crate::texture::sample_albedo;
 use crate::vec3::{Color, Vec3};
 
 /// Controls recursive reflection / refraction. When both flags are false, all
@@ -138,9 +139,10 @@ fn trace_recursive(scene: &Scene, ray: &Ray, opts: &TraceOptions, depth: u32) ->
                     Color::BLACK
                 };
 
-                // Tint by albedo; Fresnel blends reflection vs transmission.
+                // Tint by the sampled albedo at this hit's own UV (RT-018), not a
+                // cached/global color — each recursive bounce resolves its own hit.
                 return (reflected * reflectance + transmitted * (1.0 - reflectance))
-                    * hit.material.albedo;
+                    * sample_albedo(&hit.material, hit.uv);
             }
 
             let k = hit.material.reflectivity;
@@ -153,8 +155,8 @@ fn trace_recursive(scene: &Scene, ray: &Ray, opts: &TraceOptions, depth: u32) ->
             let origin = hit.point + hit.normal * SHADOW_BIAS;
             let bounce = Ray::new(origin, reflected_dir);
             let reflected = trace_recursive(scene, &bounce, opts, depth + 1);
-            // Tint the mirror by albedo; blend with local diffuse.
-            local * (1.0 - k) + (reflected * hit.material.albedo) * k
+            // Tint the mirror by this hit's sampled albedo (RT-018); blend with local diffuse.
+            local * (1.0 - k) + (reflected * sample_albedo(&hit.material, hit.uv)) * k
         }
         None => scene.background.color_for_ray(ray),
     }
@@ -397,6 +399,51 @@ mod tests {
         let on = trace_with(&scene, &ray, &TraceOptions::with_reflections(4));
         // With reflections, the metal picks up blue sky; without, stay diffuse-darker.
         assert!(on.b > off.b);
+    }
+
+    #[test]
+    fn reflection_tint_uses_sampled_texture_at_its_own_hit_not_base_albedo() {
+        // RT-018: the metal-tint multiply in `trace_recursive` must call
+        // `sample_albedo(&hit.material, hit.uv)` — the *reflecting* hit's own UV —
+        // rather than reading `hit.material.albedo` directly. Base albedo is WHITE
+        // (a no-op tint), but the checker texture at the dead-center hit point is
+        // not white, so textures-on must visibly change the tint vs. textures-off.
+        use crate::texture::{set_textures_enabled, TEST_ENABLE_LOCK};
+        let _guard = TEST_ENABLE_LOCK.lock().unwrap();
+
+        let mut scene = Scene::new().with_background(Background::Solid(Color::new(0.2, 0.6, 0.9)));
+        scene.add(Object::Sphere(Sphere::new(
+            Vec3::new(0.0, 0.0, -3.0),
+            1.0,
+            Material::metal(Color::WHITE, 1.0).with_texture("textures/checker_red.ppm"),
+        )));
+
+        // Eye -> sphere center dead-on: hits the front pole, reflects straight back
+        // out to +Z (away from the only object), so the reflected ray always sees
+        // the solid background untinted by anything except this hit's own albedo.
+        let cam = Camera::look_at(
+            Vec3::new(0.0, 0.0, 2.0),
+            Vec3::new(0.0, 0.0, -3.0),
+            Vec3::new(0.0, 1.0, 0.0),
+            60.0,
+            1.0,
+        );
+        let ray = cam.get_ray(0.5, 0.5);
+        let opts = TraceOptions::with_reflections(2);
+
+        set_textures_enabled(false);
+        let off = trace_with(&scene, &ray, &opts);
+        set_textures_enabled(true);
+        let on = trace_with(&scene, &ray, &opts);
+        set_textures_enabled(false);
+
+        // Off: WHITE tint passes the background through unchanged.
+        assert!((off.r - 0.2).abs() < 1e-9);
+        assert!((off.g - 0.6).abs() < 1e-9);
+        assert!((off.b - 0.9).abs() < 1e-9);
+        // On: the sampled (non-white) texture cell must actually change the tint.
+        assert!(on.g < off.g);
+        assert!(on.b < off.b);
     }
 
     #[test]

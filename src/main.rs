@@ -6,6 +6,7 @@ mod ppm;
 mod ray;
 mod scene;
 mod scenes;
+mod texture;
 mod tracer;
 mod vec3;
 
@@ -35,6 +36,12 @@ enum SceneId {
     Reflection,
     /// RT-017 — glass sphere demo (use with `--refraction`).
     Refraction,
+    /// RT-018 — single textured sphere demo (use with `--textures`).
+    TextureSphere,
+    /// RT-018 — textured ground plane demo (use with `--textures`).
+    TexturePlane,
+    /// RT-018 — textured *and* reflective sphere (use with `-r -t`).
+    TextureReflection,
 }
 
 struct Args {
@@ -45,6 +52,7 @@ struct Args {
     output: Option<String>,
     reflections: bool,
     refractions: bool,
+    textures: bool,
     max_depth: u32,
 }
 
@@ -55,6 +63,7 @@ fn parse_args(argv: &[String]) -> Result<Args, String> {
     let mut output = None;
     let mut reflections = false;
     let mut refractions = false;
+    let mut textures = false;
     let mut max_depth = DEFAULT_MAX_DEPTH;
 
     let mut i = 1;
@@ -85,6 +94,9 @@ fn parse_args(argv: &[String]) -> Result<Args, String> {
             "--refraction" | "-R" => {
                 refractions = true;
             }
+            "--textures" | "-t" => {
+                textures = true;
+            }
             "--max-depth" => {
                 i += 1;
                 max_depth = parse_dim(argv.get(i), "--max-depth")?;
@@ -105,6 +117,7 @@ fn parse_args(argv: &[String]) -> Result<Args, String> {
         output,
         reflections,
         refractions,
+        textures,
         max_depth,
     })
 }
@@ -129,27 +142,35 @@ fn parse_scene(value: Option<&String>) -> Result<SceneId, String> {
         "4" | "scene4" | "alt" | "alt-camera" => Ok(SceneId::Scene4),
         "5" | "reflection" | "metal" => Ok(SceneId::Reflection),
         "6" | "refraction" | "glass" => Ok(SceneId::Refraction),
+        "7" | "texture-sphere" | "tex-sphere" => Ok(SceneId::TextureSphere),
+        "8" | "texture-plane" | "tex-plane" => Ok(SceneId::TexturePlane),
+        "9" | "texture-reflection" | "tex-reflection" => Ok(SceneId::TextureReflection),
         other => Err(format!(
-            "unknown scene '{other}' (try: 1 / sphere, 2 / cube, 3 / all, 4 / alt, 5 / reflection, 6 / refraction)"
+            "unknown scene '{other}' (try: 1 / sphere, 2 / cube, 3 / all, 4 / alt, 5 / reflection, \
+             6 / refraction, 7 / texture-sphere, 8 / texture-plane, 9 / texture-reflection)"
         )),
     }
 }
 
 fn print_usage() {
     eprintln!(
-        "Usage: rt [--scene ID] [--width N] [--height N] [--output FILE] [-r] [-R] [--max-depth N]\n\
+        "Usage: rt [--scene ID] [--width N] [--height N] [--output FILE] [-r] [-R] [-t] [--max-depth N]\n\
          \n\
          Scenes:\n\
-           1 | sphere       Scene 1 — sphere only (RT-011)\n\
-           2 | cube         Scene 2 — plane + cube, dimmer light (RT-012)\n\
-           3 | all          Scene 3 — all four objects (RT-013)\n\
-           4 | alt          Scene 4 — same as 3, alternate camera (RT-014)\n\
-           5 | reflection   Bonus metal-sphere demo (RT-016; use with -r)\n\
-           6 | refraction   Bonus glass-sphere demo (RT-017; use with -R)\n\
+           1 | sphere              Scene 1 — sphere only (RT-011)\n\
+           2 | cube                Scene 2 — plane + cube, dimmer light (RT-012)\n\
+           3 | all                 Scene 3 — all four objects (RT-013)\n\
+           4 | alt                 Scene 4 — same as 3, alternate camera (RT-014)\n\
+           5 | reflection          Bonus metal-sphere demo (RT-016; use with -r)\n\
+           6 | refraction          Bonus glass-sphere demo (RT-017; use with -R)\n\
+           7 | texture-sphere      Bonus textured-sphere demo (RT-018; use with -t)\n\
+           8 | texture-plane       Bonus textured-plane demo (RT-018; use with -t)\n\
+           9 | texture-reflection  Bonus textured + reflective sphere (RT-018; use with -r -t)\n\
          \n\
          Bonus:\n\
            -r | --reflection   Enable recursive reflections\n\
            -R | --refraction   Enable dielectric refraction (Snell's law)\n\
+           -t | --textures     Enable texture sampling (P3 PPM albedo maps)\n\
            --max-depth N       Max bounce depth for -r / -R (default {DEFAULT_MAX_DEPTH})\n\
          \n\
          Defaults: scene 1, {DEFAULT_WIDTH}×{DEFAULT_HEIGHT} (dev). Audit size: 800×600.\n\
@@ -157,6 +178,7 @@ fn print_usage() {
            cargo run -- --scene 3 --width 800 --height 600 -o scenes/scene3_all.ppm\n\
            cargo run --release -- -s reflection -r --width 800 --height 600 -o scenes/scene_reflection.ppm\n\
            cargo run --release -- -s refraction -R --width 800 --height 600 -o scenes/scene_refraction.ppm\n\
+           cargo run --release -- -s texture-sphere -t --width 800 --height 600 -o scenes/scene_texture_sphere.ppm\n\
          Without --output, writes a P3 PPM to stdout."
     );
 }
@@ -180,6 +202,9 @@ fn main() {
         SceneId::Scene4 => scenes::scene4_alt_camera(aspect),
         SceneId::Reflection => scenes::scene_reflection_demo(aspect),
         SceneId::Refraction => scenes::scene_refraction_demo(aspect),
+        SceneId::TextureSphere => scenes::scene_texture_sphere_demo(aspect),
+        SceneId::TexturePlane => scenes::scene_texture_plane_demo(aspect),
+        SceneId::TextureReflection => scenes::scene_texture_reflection_demo(aspect),
     };
 
     let scene_label = match args.scene {
@@ -189,16 +214,24 @@ fn main() {
         SceneId::Scene4 => "scene4_alt_camera",
         SceneId::Reflection => "scene_reflection",
         SceneId::Refraction => "scene_refraction",
+        SceneId::TextureSphere => "scene_texture_sphere",
+        SceneId::TexturePlane => "scene_texture_plane",
+        SceneId::TextureReflection => "scene_texture_reflection",
     };
+
+    // RT-018: single process-wide switch consulted by `texture::sample_albedo`;
+    // see the comment on `TEXTURES_ENABLED` in src/texture.rs for why.
+    texture::set_textures_enabled(args.textures);
 
     let opts = TraceOptions::with_bounces(args.reflections, args.refractions, args.max_depth);
 
     eprintln!(
-        "rt: {scene_label} {}×{} reflections={} refractions={} depth={} → {}",
+        "rt: {scene_label} {}×{} reflections={} refractions={} textures={} depth={} → {}",
         args.width,
         args.height,
         opts.reflections,
         opts.refractions,
+        args.textures,
         opts.max_depth,
         args.output.as_deref().unwrap_or("stdout")
     );
@@ -249,6 +282,7 @@ mod arg_tests {
         assert!(args.output.is_none());
         assert!(!args.reflections);
         assert!(!args.refractions);
+        assert!(!args.textures);
     }
 
     #[test]
@@ -309,6 +343,24 @@ mod arg_tests {
                 .scene,
             SceneId::Refraction
         );
+        assert_eq!(
+            parse_args(&["rt".into(), "-s".into(), "texture-sphere".into()])
+                .unwrap()
+                .scene,
+            SceneId::TextureSphere
+        );
+        assert_eq!(
+            parse_args(&["rt".into(), "-s".into(), "8".into()])
+                .unwrap()
+                .scene,
+            SceneId::TexturePlane
+        );
+        assert_eq!(
+            parse_args(&["rt".into(), "-s".into(), "tex-reflection".into()])
+                .unwrap()
+                .scene,
+            SceneId::TextureReflection
+        );
     }
 
     #[test]
@@ -343,5 +395,30 @@ mod arg_tests {
         assert!(!args.reflections);
         assert_eq!(args.max_depth, 10);
         assert_eq!(args.scene, SceneId::Refraction);
+    }
+
+    #[test]
+    fn texture_flag() {
+        let args = parse_args(&["rt".into(), "-t".into(), "-s".into(), "texture-sphere".into()])
+            .unwrap();
+        assert!(args.textures);
+        assert!(!args.reflections);
+        assert!(!args.refractions);
+        assert_eq!(args.scene, SceneId::TextureSphere);
+    }
+
+    #[test]
+    fn textures_combine_with_reflection() {
+        let args = parse_args(&[
+            "rt".into(),
+            "--textures".into(),
+            "-r".into(),
+            "-s".into(),
+            "tex-reflection".into(),
+        ])
+        .unwrap();
+        assert!(args.textures);
+        assert!(args.reflections);
+        assert_eq!(args.scene, SceneId::TextureReflection);
     }
 }

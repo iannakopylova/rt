@@ -26,6 +26,9 @@ pub struct HitRecord {
     pub normal: Vec3,
     pub front_face: bool,
     pub material: Material,
+    /// Object-specific surface UV in `[0, 1]²`, used by [`crate::texture::sample_albedo`]
+    /// (RT-018). Meaningless for materials without a texture.
+    pub uv: (f64, f64),
 }
 
 impl HitRecord {
@@ -36,6 +39,7 @@ impl HitRecord {
         outward_normal: Vec3,
         ray: &Ray,
         material: Material,
+        uv: (f64, f64),
     ) -> Self {
         let front_face = ray.direction.dot(outward_normal) < 0.0;
         let normal = if front_face {
@@ -49,6 +53,7 @@ impl HitRecord {
             normal,
             front_face,
             material,
+            uv,
         }
     }
 }
