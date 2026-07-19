@@ -1,3 +1,6 @@
+// Binary-only crate: helpers used by unit tests / docs look "unused" to `cargo build`.
+#![allow(dead_code)]
+
 mod camera;
 mod light;
 mod material;

@@ -1,21 +1,27 @@
 #!/usr/bin/env python3
-"""Convert every P3 PPM render in `scenes/` to a same-named PNG for viewing.
+"""Convert P3 PPM renders to PNG previews under `scenes/pngs/`.
 
 Stdlib only (`struct` + `zlib`) — no Pillow, no `image` crate, consistent with
 `scripts/gen-demo-textures.py`. The `.ppm` stays the required audit
 deliverable; the `.png` is only a convenience copy so renders can be viewed
 without a PPM-aware tool. Never deletes or modifies the source `.ppm`.
 
-Re-run this any time `scenes/*.ppm` changes, or a `.png` preview goes missing:
+Usage:
 
     python3 scripts/ppm_to_png.py
+        # every complete scenes/*.ppm → scenes/pngs/<stem>.png
+
+    python3 scripts/ppm_to_png.py scenes/scene3_lowres.ppm
+        # one (or more) explicit paths → scenes/pngs/<stem>.png
 """
 import glob
 import os
+import sys
 import struct
 import zlib
 
 SCENES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scenes")
+PNGS_DIR = os.path.join(SCENES_DIR, "pngs")
 
 
 def read_ppm_p3(path):
@@ -65,16 +71,36 @@ def write_png(path, width, height, rgb_pixels):
         f.write(chunk(b"IEND", b""))
 
 
+def convert_one(ppm_path):
+    width, height, pixels = read_ppm_p3(ppm_path)
+    os.makedirs(PNGS_DIR, exist_ok=True)
+    stem = os.path.splitext(os.path.basename(ppm_path))[0]
+    png_path = os.path.join(PNGS_DIR, stem + ".png")
+    write_png(png_path, width, height, pixels)
+    print(f"{ppm_path} ({width}x{height}) -> {png_path}")
+
+
 def main():
-    ppm_paths = sorted(glob.glob(os.path.join(SCENES_DIR, "*.ppm")))
+    if len(sys.argv) > 1:
+        ppm_paths = sys.argv[1:]
+    else:
+        ppm_paths = sorted(glob.glob(os.path.join(SCENES_DIR, "*.ppm")))
+
     if not ppm_paths:
         print(f"no .ppm files found in {SCENES_DIR}")
         return
+
+    converted = 0
     for ppm_path in ppm_paths:
-        width, height, pixels = read_ppm_p3(ppm_path)
-        png_path = os.path.splitext(ppm_path)[0] + ".png"
-        write_png(png_path, width, height, pixels)
-        print(f"{ppm_path} ({width}x{height}) -> {png_path}")
+        try:
+            convert_one(ppm_path)
+            converted += 1
+        except (OSError, ValueError) as exc:
+            # Incomplete leftovers (e.g. truncated out.ppm) should not abort the batch.
+            print(f"skip {ppm_path}: {exc}", file=sys.stderr)
+
+    if converted == 0:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

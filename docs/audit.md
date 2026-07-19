@@ -25,10 +25,12 @@ cargo run --release -- --help
 **Viewing PPMs:** open in an image viewer that supports P3 PPM, or convert:
 
 ```bash
-python3 scripts/ppm_to_png.py   # regenerates scenes/*.png from scenes/*.ppm
+python3 scripts/ppm_to_png.py   # writes scenes/pngs/<name>.png from each scenes/*.ppm
 ```
 
 Then open files under `scenes/pngs/`.
+
+**Important — `-o` is the output path.** `--width` / `--height` only change the file you write with `-o`. They do **not** edit an existing PPM/PNG. Example: `-o /tmp/preview.ppm` never updates `scenes/scene3_all.ppm` or `scenes/pngs/scene3_all.png`.
 
 ---
 
@@ -39,31 +41,49 @@ Then open files under `scenes/pngs/`.
 **How to execute**
 
 ```bash
-# Scene 3 already contains sphere + cube + cylinder + plane
+# Scene 3 already contains sphere + cube + cylinder + plane (audit size)
 cargo run --release -- --scene 3 --width 800 --height 600 -o scenes/scene3_all.ppm
+python3 scripts/ppm_to_png.py scenes/scene3_all.ppm
+# → open scenes/pngs/scene3_all.png
 ```
 
-Or lower resolution while waiting / iterating:
+Fast preview while iterating (separate file — does not replace the audit PPM):
 
 ```bash
-cargo run --release -- --scene 3 --width 200 --height 150 -o /tmp/preview.ppm
+cargo run --release -- --scene 3 --width 200 --height 150 -o scenes/scene3_preview.ppm
+python3 scripts/ppm_to_png.py scenes/scene3_preview.ppm
+# → open scenes/pngs/scene3_preview.png
 ```
 
 ###### Does the image correspond to the scene you created?
 
 **Answer: Yes.**  
-**How:** Open `scenes/scene3_all.ppm` (or its PNG). You should see a ground plane plus a sphere, a cube, and a cylinder under a key light, with shadows. Layout is built in `src/scenes.rs` → `scene3_world()`.
+**How:** Open `scenes/scene3_all.ppm` or `scenes/pngs/scene3_all.png`. You should see a ground plane plus a sphere, a cube, and a cylinder under a key light, with shadows. Layout is built in `src/scenes.rs` → `scene3_world()`.
 
 ###### Is it possible for you to reduce the resolution of the output image?
 
 **Answer: Yes.**  
-**How:** Pass smaller `--width` / `--height` (or `-w` / `-h`):
+**How:** Pass smaller `--width` / `--height` (or `-w` / `-h`) and write a **new** file. Then check the PPM header (line 2 is `width height`):
 
 ```bash
-cargo run --release -- --scene 3 --width 320 --height 240 -o /tmp/lowres.ppm
-```
+# Low-res proof file (keeps the 800×600 audit PPM untouched)
+cargo run --release -- --scene 3 --width 320 --height 240 -o scenes/scene3_lowres.ppm
 
-Confirm the PPM header (`P3` then `320 240`) matches.
+# 1) Confirm resolution in the PPM itself
+head -n 3 scenes/scene3_lowres.ppm
+# expect:
+#   P3
+#   320 240
+#   255
+
+# Compare with the audit render (still 800×600):
+ 
+# expect: 800 600
+
+# 2) Convert the low-res PPM so you can view it as PNG
+python3 scripts/ppm_to_png.py scenes/scene3_lowres.ppm
+# → open scenes/pngs/scene3_lowres.png  (visibly smaller / blockier than scene3_all.png)
+```
 
 ##### Move the camera and render the same scene.
 

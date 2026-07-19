@@ -3,3 +3,11 @@
 !scenes/*.ppm
 !textures/*.ppm
 
+
+# Local audit scratch renders (not deliverables)
+scenes/out.ppm
+scenes/preview_scene3.ppm
+scenes/scene3_lowres.ppm
+scenes/scene3_preview.ppm
+scenes/pngs/scene3_lowres.png
+scenes/pngs/scene3_preview.png
