@@ -18,6 +18,9 @@ use crate::vec3::{Color, Vec3};
 
 const PARALLEL_EPS: f64 = 1e-8;
 
+/// World units per texture repeat, used by [`Plane::hit`] UV mapping (RT-018).
+const DEFAULT_TILE_SIZE: f64 = 2.0;
+
 /// Infinite plane used as ground / walls.
 #[derive(Clone, Copy, Debug)]
 pub struct Plane {
@@ -26,6 +29,8 @@ pub struct Plane {
     /// Constant term so `normal · x + offset == 0` for every point on the plane.
     pub offset: f64,
     pub material: Material,
+    /// World units per texture repeat along local X/Z (RT-018); see [`Plane::with_tile_size`].
+    pub tile_size: f64,
 }
 
 impl Plane {
@@ -37,6 +42,7 @@ impl Plane {
             normal,
             offset,
             material,
+            tile_size: DEFAULT_TILE_SIZE,
         }
     }
 
@@ -49,11 +55,32 @@ impl Plane {
         Self::from_point_normal(point, normal, Material::solid(albedo))
     }
 
+    /// Override the texture repeat distance (world units per tile); e.g. a smaller
+    /// value repeats a texture more densely across the plane.
+    pub fn with_tile_size(mut self, tile_size: f64) -> Self {
+        self.tile_size = if tile_size.abs() > 1e-9 {
+            tile_size.abs()
+        } else {
+            DEFAULT_TILE_SIZE
+        };
+        self
+    }
+
     /// Any point known to lie on the plane (useful for debugging / scene setup).
     #[allow(dead_code)] // handy for scene wiring / docs examples
     pub fn anchor(self) -> Vec3 {
         // Pick the point along the normal from the origin.
         self.normal * (-self.offset)
+    }
+
+    /// Tiled UV from world **X/Z** at the hit point (RT-018). Matches how this
+    /// project only ever uses horizontal (`+Y`) ground planes; an arbitrarily
+    /// tilted plane would still get a UV, just not a seam-free one.
+    fn uv_at(self, point: Vec3) -> (f64, f64) {
+        (
+            (point.x / self.tile_size).rem_euclid(1.0),
+            (point.z / self.tile_size).rem_euclid(1.0),
+        )
     }
 }
 
@@ -77,6 +104,7 @@ impl Hittable for Plane {
             self.normal,
             ray,
             self.material,
+            self.uv_at(point),
         ))
     }
 }
@@ -116,6 +144,27 @@ mod tests {
         assert!(approx(hit.point.y, -1.0));
         assert!(approx(hit.normal.y, 1.0));
         assert!(hit.front_face);
+    }
+
+    #[test]
+    fn uv_tiles_and_wraps_negative_coords() {
+        // Default tile_size is 2.0: u = (x/2).rem_euclid(1), v = (z/2).rem_euclid(1).
+        let plane = Plane::ground(-1.0, Material::solid(Color::new(0.5, 0.5, 0.5)));
+        let ray = Ray::new(Vec3::new(3.0, 2.0, -1.0), Vec3::new(0.0, -1.0, 0.0));
+        let hit = plane.hit(&ray, 0.001, f64::INFINITY).unwrap();
+        assert!(approx(hit.uv.0, 0.5)); // (3.0/2.0).rem_euclid(1.0)
+        assert!(approx(hit.uv.1, 0.5)); // (-1.0/2.0).rem_euclid(1.0)
+        assert!((0.0..1.0).contains(&hit.uv.0));
+        assert!((0.0..1.0).contains(&hit.uv.1));
+    }
+
+    #[test]
+    fn with_tile_size_rescales_uv() {
+        let plane = Plane::ground(-1.0, Material::solid(Color::WHITE)).with_tile_size(4.0);
+        assert!(approx(plane.tile_size, 4.0));
+        let ray = Ray::new(Vec3::new(2.0, 1.0, 0.0), Vec3::new(0.0, -1.0, 0.0));
+        let hit = plane.hit(&ray, 0.001, f64::INFINITY).unwrap();
+        assert!(approx(hit.uv.0, 0.5)); // (2.0/4.0).rem_euclid(1.0)
     }
 
     #[test]

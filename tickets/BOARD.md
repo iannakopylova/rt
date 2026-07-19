@@ -1,15 +1,17 @@
 # Board
 
-_Last updated: 2026-07-18_
+_Last updated: 2026-07-19_
 
 > **Dependency map:** see [DEPENDENCIES.md](./DEPENDENCIES.md) for which tickets block which.
 > **Branch naming:** `ticket/RT-XXX-short-title` — see [../docs/BRANCHING.md](../docs/BRANCHING.md)
 
 | Person | Active ticket | Next up |
 |--------|---------------|---------|
-| **Iana** | — | RT-018 bonus |
+| **Iana** | — (textures done) | — |
 | **Sofia** | — (refraction done) | — |
 | **Andriana** | — (reflection done) | — |
+
+All 18 tickets are Done — nothing left in Backlog / To Do / In Progress / In Review.
 
 ---
 
@@ -17,7 +19,7 @@ _Last updated: 2026-07-18_
 
 | ID | Title | Priority | Epic | Assignee |
 |----|-------|----------|------|----------|
-| [RT-018](./RT-018-bonus-textures.md) | Textures (bonus) | P2 | bonus | @iana |
+| _empty_ | | | | |
 
 ## To Do
 
@@ -41,6 +43,7 @@ _Last updated: 2026-07-18_
 
 | ID | Title | Priority | Epic | Assignee |
 |----|-------|----------|------|----------|
+| [RT-018](./RT-018-bonus-textures.md) | Textures (bonus) | P2 | bonus | @iana |
 | [RT-017](./RT-017-bonus-refraction.md) | Refraction (bonus) | P2 | bonus | @sofia |
 | [RT-016](./RT-016-bonus-reflection.md) | Reflection (bonus) | P2 | bonus | @andriana |
 | [RT-015](./RT-015-documentation.md) | Auditor documentation (markdown) | P1 | docs | @andriana |

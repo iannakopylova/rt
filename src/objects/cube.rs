@@ -96,7 +96,30 @@ impl Hittable for Cube {
             outward,
             ray,
             self.material,
+            face_uv(point, outward, self.min, self.max),
         ))
+    }
+}
+
+/// Per-face planar UV (RT-018): pick the two axes that aren't the hit face's
+/// normal axis and normalize each against the cube's extent on that axis.
+fn face_uv(point: Vec3, outward: Vec3, min: Vec3, max: Vec3) -> (f64, f64) {
+    if outward.x.abs() > outward.y.abs() && outward.x.abs() > outward.z.abs() {
+        (axis_frac(point.z, min.z, max.z), axis_frac(point.y, min.y, max.y))
+    } else if outward.y.abs() > outward.z.abs() {
+        (axis_frac(point.x, min.x, max.x), axis_frac(point.z, min.z, max.z))
+    } else {
+        (axis_frac(point.x, min.x, max.x), axis_frac(point.y, min.y, max.y))
+    }
+}
+
+/// Normalized position of `value` within `[lo, hi]`; `0.0` for a degenerate (zero-width) span.
+fn axis_frac(value: f64, lo: f64, hi: f64) -> f64 {
+    let span = hi - lo;
+    if span.abs() < 1e-12 {
+        0.0
+    } else {
+        ((value - lo) / span).clamp(0.0, 1.0)
     }
 }
 
@@ -184,6 +207,45 @@ mod tests {
         let cube = unit_cube_at_z5();
         let ray = Ray::new(Vec3::new(0.0, 2.0, 0.0), Vec3::new(0.0, 0.0, -1.0));
         assert!(cube.hit(&ray, 0.001, f64::INFINITY).is_none());
+    }
+
+    #[test]
+    fn uv_front_face_offset_from_center() {
+        // min=(-1,-1,-6), max=(1,1,-4): hit at (0.5, 0.75, -4) on the +Z face.
+        let cube = unit_cube_at_z5();
+        let ray = Ray::new(Vec3::new(0.5, 0.75, 0.0), Vec3::new(0.0, 0.0, -1.0));
+        let hit = cube.hit(&ray, 0.001, f64::INFINITY).unwrap();
+        assert!(approx(hit.point.z, -4.0));
+        assert!(approx(hit.uv.0, 0.75)); // (0.5 - (-1)) / 2
+        assert!(approx(hit.uv.1, 0.875)); // (0.75 - (-1)) / 2
+    }
+
+    #[test]
+    fn uv_side_face_uses_z_y_not_x() {
+        let cube = unit_cube_at_z5();
+        let ray = Ray::new(Vec3::new(2.0, 0.0, -5.0), Vec3::new(-1.0, 0.0, 0.0));
+        let hit = cube.hit(&ray, 0.001, f64::INFINITY).unwrap();
+        assert!(approx(hit.normal.x, 1.0)); // +X face
+        assert!(approx(hit.uv.0, 0.5)); // (z - (-6)) / 2, z == -5 at center
+        assert!(approx(hit.uv.1, 0.5)); // (y - (-1)) / 2, y == 0 at center
+    }
+
+    #[test]
+    fn uv_stays_in_unit_range_on_every_face() {
+        let cube = unit_cube_at_z5();
+        let rays = [
+            Ray::new(Vec3::ZERO, Vec3::new(0.0, 0.0, -1.0)), // +Z
+            Ray::new(Vec3::new(0.0, 0.0, -5.0), Vec3::new(0.0, 0.0, -1.0)), // -Z (from inside)
+            Ray::new(Vec3::new(2.0, 0.0, -5.0), Vec3::new(-1.0, 0.0, 0.0)), // +X
+            Ray::new(Vec3::new(-2.0, 0.0, -5.0), Vec3::new(1.0, 0.0, 0.0)), // -X
+            Ray::new(Vec3::new(0.0, 2.0, -5.0), Vec3::new(0.0, -1.0, 0.0)), // +Y
+            Ray::new(Vec3::new(0.0, -2.0, -5.0), Vec3::new(0.0, 1.0, 0.0)), // -Y
+        ];
+        for ray in rays {
+            let hit = cube.hit(&ray, 0.001, f64::INFINITY).unwrap();
+            assert!((0.0..=1.0).contains(&hit.uv.0), "u out of range: {:?}", hit.uv);
+            assert!((0.0..=1.0).contains(&hit.uv.1), "v out of range: {:?}", hit.uv);
+        }
     }
 
     #[test]

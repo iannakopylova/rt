@@ -1,4 +1,5 @@
 /target/
 *.ppm
 !scenes/*.ppm
+!textures/*.ppm
 

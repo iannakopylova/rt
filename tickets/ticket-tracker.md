@@ -6,7 +6,7 @@
 
 # rt Ticket Tracker
 
-Last refreshed: 2026-07-18 (RT-017 refraction done)
+Last refreshed: 2026-07-19 (RT-018 textures done — all 18 tickets complete)
 
 > **Board vs tracker**: [BOARD.md](./BOARD.md) is the live sprint board (who is on what). This file is the full requirements-style tracker: every ticket, deps, acceptance summary, and coverage by epic.
 
@@ -40,7 +40,7 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 
 | Person | Active ticket | Next up |
 |--------|---------------|---------|
-| **Iana** | — (PPM done) | RT-018 bonus |
+| **Iana** | — (textures done) | — |
 | **Sofia** | — (objects + refraction done) | — |
 | **Andriana** | — (docs + reflection done) | — |
 
@@ -172,7 +172,7 @@ This repository delivers a Rust ray tracer that writes **P3 PPM** images (stdlib
 |----|--------|--------|------|------|----------|----------|
 | RT-016 | ✅ | **Reflection**: reflective materials; max bounce depth; CLI flag (e.g. `-r`). | M | RT-008, RT-009 | B1 | @andriana |
 | RT-017 | ✅ | **Refraction**: Snell's law / glass; CLI flag; demo object. | L | RT-009, RT-016 (recommended) | B2 | @sofia |
-| RT-018 | ⬜ | **Textures**: UV sample albedo; CLI flag (e.g. `-t`); document paths/formats. | M | RT-004–007, RT-009 | B3 | @iana |
+| RT-018 | ✅ | **Textures**: UV sample albedo; CLI flag (e.g. `-t`); document paths/formats. | M | RT-004–007, RT-009 | B3 | @iana |
 
 ---
 
@@ -206,13 +206,13 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 | D12 | Documentation | RT-015 | ✅ |
 | B1 | Reflection | RT-016 | ✅ |
 | B2 | Refraction | RT-017 | ✅ |
-| B3 | Textures | RT-018 | ⬜ |
+| B3 | Textures | RT-018 | ✅ |
 
 ---
 
 ## 6) Immediate Next Work Queue
 
-1. **Iana** — optional bonus **RT-018** (textures).
+_None — all 18 tickets (mandatory + bonus) are ✅ Done._
 
 ---
 
@@ -224,7 +224,7 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 |-------|---------|
 | 0–1 | RT-001 ✅, RT-002 ✅ |
 | 3–4 | RT-009 ✅, RT-010 ✅ |
-| 7 | RT-018 ⬜ |
+| 7 | RT-018 ✅ |
 
 ### Sofia — 6 tickets
 
@@ -246,10 +246,10 @@ Full dependency graph: [DEPENDENCIES.md](./DEPENDENCIES.md).
 
 | Status | Count |
 |--------|-------|
-| ✅ Done | 17 |
+| ✅ Done | 18 |
 | 🟢 In Progress | 0 |
 | 🟡 To Do | 0 |
-| ⬜ Backlog | 1 |
+| ⬜ Backlog | 0 |
 | 🔵 In Review | 0 |
 
 | Priority | Count |

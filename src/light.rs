@@ -2,6 +2,7 @@
 
 use crate::objects::HitRecord;
 use crate::ray::Ray;
+use crate::texture::sample_albedo;
 use crate::vec3::{Color, Vec3};
 
 /// Bias along the surface normal so shadow rays do not re-hit the same point.
@@ -103,7 +104,7 @@ pub fn shade_lambertian(
     ambient: f64,
     mut occluded: impl FnMut(&Ray, f64) -> bool,
 ) -> Color {
-    let albedo = hit.material.albedo;
+    let albedo = sample_albedo(&hit.material, hit.uv);
     let mut color = albedo * ambient.max(0.0);
 
     for light in lights {
@@ -148,6 +149,7 @@ mod tests {
             normal: Vec3::new(0.0, 0.0, 1.0),
             front_face: true,
             material: Material::solid(Color::WHITE),
+            uv: (0.0, 0.0),
         }
     }
 

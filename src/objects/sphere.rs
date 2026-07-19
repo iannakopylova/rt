@@ -59,8 +59,20 @@ impl Hittable for Sphere {
             outward,
             ray,
             self.material,
+            sphere_uv(outward),
         ))
     }
+}
+
+/// Spherical UV from the **outward** unit normal (i.e. `(point - center) / radius`).
+///
+/// `u = 0.5 + atan2(z, x) / (2π)`, `v = 0.5 - asin(y) / π` (RT-018).
+fn sphere_uv(outward: Vec3) -> (f64, f64) {
+    use std::f64::consts::PI;
+    let u = 0.5 + outward.z.atan2(outward.x) / (2.0 * PI);
+    // Clamp guards fp drift pushing the argument just past asin's [-1, 1] domain.
+    let v = 0.5 - outward.y.clamp(-1.0, 1.0).asin() / PI;
+    (u, v)
 }
 
 #[cfg(test)]
@@ -94,6 +106,39 @@ mod tests {
         assert!(approx(hit.normal.z, 1.0)); // outward (+Z) faces the camera
         assert!(hit.front_face);
         assert_eq!(hit.material.albedo, Color::new(1.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn uv_at_equator_front() {
+        // Front hit (outward +Z): u = 0.5 + atan2(1, 0)/(2π) = 0.75, v = 0.5 - asin(0)/π = 0.5.
+        let sphere = red_sphere();
+        let ray = Ray::new(Vec3::ZERO, Vec3::new(0.0, 0.0, -1.0));
+        let hit = sphere.hit(&ray, 0.001, f64::INFINITY).unwrap();
+        assert!(approx(hit.uv.0, 0.75));
+        assert!(approx(hit.uv.1, 0.5));
+    }
+
+    #[test]
+    fn uv_at_poles() {
+        let sphere = red_sphere(); // center (0,0,-5), radius 1
+        let top = Ray::new(Vec3::new(0.0, 3.0, -5.0), Vec3::new(0.0, -1.0, 0.0));
+        let hit_top = sphere.hit(&top, 0.001, f64::INFINITY).unwrap();
+        assert!(approx(hit_top.uv.1, 0.0)); // north pole (y = +radius) -> v = 0
+
+        let bottom = Ray::new(Vec3::new(0.0, -3.0, -5.0), Vec3::new(0.0, 1.0, 0.0));
+        let hit_bottom = sphere.hit(&bottom, 0.001, f64::INFINITY).unwrap();
+        assert!(approx(hit_bottom.uv.1, 1.0)); // south pole (y = -radius) -> v = 1
+    }
+
+    #[test]
+    fn uv_wraps_around_the_back() {
+        let sphere = red_sphere();
+        // Back hit (outward -Z): u = 0.5 + atan2(-1, 0)/(2π) = 0.25.
+        let ray = Ray::new(Vec3::new(0.0, 0.0, -10.0), Vec3::new(0.0, 0.0, 1.0));
+        let hit = sphere.hit(&ray, 0.001, f64::INFINITY).unwrap();
+        assert!(approx(hit.uv.0, 0.25));
+        assert!((0.0..=1.0).contains(&hit.uv.0));
+        assert!((0.0..=1.0).contains(&hit.uv.1));
     }
 
     #[test]
