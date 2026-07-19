@@ -168,4 +168,12 @@ mod tests {
         assert!(scene.is_occluded(&ray, 10.0));
         assert!(!scene.is_occluded(&ray, 0.1));
     }
+
+    #[test]
+    fn with_solid_background_sets_flat_color() {
+        let color = Color::new(0.2, 0.4, 0.6);
+        let scene = Scene::new().with_solid_background(color);
+        let ray = Ray::new(Vec3::ZERO, Vec3::new(0.0, 1.0, 0.0));
+        assert_eq!(scene.background.color_for_ray(&ray), color);
+    }
 }

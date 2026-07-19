@@ -212,4 +212,15 @@ mod tests {
         assert!((ray.direction.length() - 1.0).abs() < 1e-10);
         assert!(approx(ray.direction.y, 1.0));
     }
+
+    #[test]
+    fn forward_matches_center_ray_direction() {
+        let cam = front_camera();
+        let f = cam.forward();
+        assert!((f.length() - 1.0).abs() < 1e-10);
+        assert!(approx(f.x, 0.0));
+        assert!(approx(f.y, 0.0));
+        assert!(approx(f.z, -1.0));
+        assert_eq!(cam.get_ray(0.5, 0.5).direction, f);
+    }
 }
